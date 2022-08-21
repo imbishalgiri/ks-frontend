@@ -1,9 +1,16 @@
 import React from "react";
-import { Button, Modal, Box, IconButton } from "@material-ui/core";
+import {
+  Button,
+  Modal,
+  Box,
+  IconButton,
+  CircularProgress,
+} from "@material-ui/core";
 import useStyles from "./styles";
 
 import PropTypes from "prop-types";
 import { GrClose } from "react-icons/gr";
+import LoadingButton from "../loadingButton";
 
 const CustomModal = ({
   headerText,
@@ -12,6 +19,9 @@ const CustomModal = ({
   children,
   width,
   height,
+  onSave,
+  disabled,
+  isLoading = false,
 }) => {
   const classes = useStyles();
 
@@ -41,17 +51,29 @@ const CustomModal = ({
 
         <Box className={classes.modalFooter}>
           <Box className={classes.modalFooterButtons}>
-            <Button className={classes.modalFooterBtn} variant={"contained"}>
-              Save
-            </Button>
-            <Button
-              className={classes.modalFooterCancel}
-              sx={{ background: "#fff", color: "#000" }}
-              variant={"contained"}
-              onClick={handleClose}
-            >
-              Cancel
-            </Button>
+            {!isLoading ? (
+              <Button
+                className={classes.modalFooterBtn}
+                variant={"contained"}
+                disabled={disabled}
+                onClick={onSave}
+              >
+                Save
+              </Button>
+            ) : (
+              <CircularProgress size={"2rem"} />
+            )}
+
+            {!isLoading && (
+              <Button
+                className={classes.modalFooterCancel}
+                sx={{ background: "#fff", color: "#000" }}
+                variant={"contained"}
+                onClick={handleClose}
+              >
+                Cancel
+              </Button>
+            )}
           </Box>
         </Box>
       </Box>

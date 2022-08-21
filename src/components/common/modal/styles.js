@@ -32,6 +32,7 @@ const usestyles = makeStyles(() => ({
   },
   modalBody: {
     padding: "2rem 2.5rem 2rem 3.8rem",
+    overflow: "scroll",
   },
   modalFooter: {
     width: "100%",

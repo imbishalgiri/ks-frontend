@@ -5,7 +5,7 @@ import { convertToHTML } from "draft-convert";
 import DOMPurify from "dompurify";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import "./styles.css";
-const TextEditor = () => {
+const TextEditor = ({ handleDescriptionChange = null }) => {
   const [editorState, setEditorState] = useState(() =>
     EditorState.createEmpty()
   );
@@ -13,6 +13,7 @@ const TextEditor = () => {
   const handleEditorChange = (state) => {
     setEditorState(state);
     convertContentToHTML();
+    handleDescriptionChange(convertedContent);
   };
   const convertContentToHTML = () => {
     let currentContentAsHTML = convertToHTML(editorState.getCurrentContent());

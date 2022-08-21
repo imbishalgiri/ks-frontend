@@ -1,19 +1,30 @@
-import { Input, InputAdornment } from "@material-ui/core";
+import {
+  FormControl,
+  IconButton,
+  Input,
+  InputAdornment,
+  InputLabel,
+  OutlinedInput,
+  TextField,
+} from "@material-ui/core";
 import React from "react";
 import { useState } from "react";
 import { GrClose } from "react-icons/gr";
+import { useStyles } from "../../../styles/MaterialUI";
+import usestyles from "./styles";
 
 const SingleTag = ({ id, value, onDelete }) => {
   return (
     <span
       style={{
-        background: "#fff",
         margin: "0 3px",
         padding: "8px 10px",
+        background: "#fff",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         borderRadius: "50px",
+        fontSize: "17px",
       }}
     >
       {value && (
@@ -26,49 +37,69 @@ const SingleTag = ({ id, value, onDelete }) => {
   );
 };
 
-const Tags = () => {
+const Tags = ({ onSpaceHit }) => {
   const [tags, setTags] = useState([]);
   const [formInput, setFormInput] = useState("");
-
-  console.log("tags -->", tags);
+  const styles = usestyles();
 
   const handleChange = (e) => {
     console.log(e.target.value);
     setFormInput(e.target.value);
     if (e.code === "Space") {
-      setTags([
-        ...tags,
-        { id: tags.length + 1, value: `#${e.target.value.trim()}` },
-      ]);
+      if (tags.length < 3) {
+        const newTags = [
+          ...tags,
+          { id: tags.length + 1, value: `#${e.target.value.trim()}` },
+        ];
+        // handeling locally
+        setTags(newTags);
+        // sending to the parent
+        onSpaceHit(newTags);
+      }
+
       setFormInput("");
     }
   };
 
   const handleDelete = (id) => {
-    setTags(tags.filter((el) => el.id !== id));
+    const filteredTags = tags.filter((el) => el.id !== id);
+    setTags(filteredTags);
+    // deleting from the parent state
+    onSpaceHit(filteredTags);
   };
 
   return (
-    <Input
-      style={{ height: "50px", borderBottom: "none", border: "2px solid #000" }}
-      label="tags"
-      onChange={handleChange}
-      value={formInput}
-      onKeyDown={handleChange}
-      startAdornment={
-        <InputAdornment position="start">
-          {tags.map((tag) => (
-            <SingleTag
-              key={tag.id}
-              id={tag.id}
-              value={tag.value}
-              onDelete={handleDelete}
-            />
-          ))}
-        </InputAdornment>
-      }
-      variant={"outlined"}
-    />
+    <FormControl variant="outlined">
+      <InputLabel htmlFor="outlined-adornment-tags">Tags</InputLabel>
+      <OutlinedInput
+        id="outlined-adornment-tags"
+        type="text"
+        value={formInput}
+        onChange={handleChange}
+        onKeyDown={handleChange}
+        style={{ width: "530px" }}
+        startAdornment={
+          tags.length > 0 && (
+            <InputAdornment position="start">
+              {tags.map((tag, index) => {
+                return (
+                  index < 3 && (
+                    <SingleTag
+                      key={tag.id}
+                      id={tag.id}
+                      value={tag.value}
+                      onDelete={handleDelete}
+                      onClick={() => handleDelete(tag.id)}
+                    />
+                  )
+                );
+              })}
+            </InputAdornment>
+          )
+        }
+        label="tags"
+      />
+    </FormControl>
   );
 };
 
