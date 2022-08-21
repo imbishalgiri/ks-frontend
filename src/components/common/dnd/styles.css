@@ -1,0 +1,46 @@
+.App {
+  font-family: sans-serif;
+  text-align: center;
+}
+#drop-area {
+  position: relative;
+}
+
+#fileElem {
+  display: none;
+}
+
+.upload-label {
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 6px;
+  min-width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f6f6f6;
+}
+.upload-label:hover {
+  background-color: #e9e9e9;
+}
+
+.upload-label:active {
+  background-color: #f6f6f6;
+}
+
+.upload-text {
+  color: #666;
+  user-select: none;
+}
+
+.image {
+  min-width: 100%;
+  max-width: 100%;
+  height: 140px;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+}
