@@ -1,5 +1,12 @@
 import React, { useMemo, useState } from "react";
-import { Box, Button, TextField, Tooltip } from "@material-ui/core";
+import {
+  Box,
+  Button,
+  Menu,
+  MenuItem,
+  TextField,
+  Tooltip,
+} from "@material-ui/core";
 
 import kFormatter from "../../../utils/kFormatter";
 
@@ -25,7 +32,7 @@ import {
 import { FaThumbsDown } from "react-icons/fa";
 import AddComment from "../../Comment/addComment";
 
-const FeedPost = ({ user, title, avatar }) => {
+const FeedPost = ({ user, title, avatar, image = "", hideComment = false }) => {
   const classes = useStyles();
   const [isDisliked, setIsDisliked] = useState(false);
   const [showComment, setShowComment] = useState(false);
@@ -45,6 +52,15 @@ const FeedPost = ({ user, title, avatar }) => {
   );
   const time = useMemo(() => Math.floor(Math.random() * (24 - 1)) + 1, []);
 
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   return (
     <Panel>
       <Container>
@@ -62,12 +78,34 @@ const FeedPost = ({ user, title, avatar }) => {
               <time>{`${time}h`}</time>
             </Tooltip>
           </Column>
-          <div className="post-options">
+          <div className="post-options" onClick={handleClick}>
             <PostOptionsIcon />
           </div>
+          <Menu
+            id="demo-positioned-menu"
+            aria-labelledby="demo-positioned-button"
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleClose}
+            anchorOrigin={{
+              vertical: "top",
+              horizontal: "left",
+            }}
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "left",
+            }}
+          >
+            <MenuItem onClick={handleClose}>Profile</MenuItem>
+            <MenuItem onClick={handleClose}>My account</MenuItem>
+            <MenuItem onClick={handleClose}>Logout</MenuItem>
+          </Menu>
         </Row>
         <PostImage
-          src="https://blog.rocketseat.com.br/content/images/2019/05/Painel.png"
+          src={
+            image ||
+            "https://blog.rocketseat.com.br/content/images/2019/05/Painel.png"
+          }
           alt="Rocketseat Blog"
         />
         <Row className="likes">
@@ -121,6 +159,7 @@ const FeedPost = ({ user, title, avatar }) => {
           <Tooltip
             title="React to the post"
             placement="bottom"
+            style={hideComment ? { marginLeft: "auto" } : null}
             arrow
             classes={{ tooltip: classes.tooltip }}
           >
@@ -129,21 +168,23 @@ const FeedPost = ({ user, title, avatar }) => {
               {isDisliked && <DisLikedIcon />}
             </button>
           </Tooltip>
-          <Tooltip
-            title="Comment on the post"
-            placement="bottom"
-            arrow
-            classes={{ tooltip: classes.tooltip }}
-          >
-            <button
-              onClick={() => setShowComment(!showComment)}
-              style={{ marginLeft: "auto" }}
-              type="button"
+          {!hideComment && (
+            <Tooltip
+              title="Comment on the post"
+              placement="bottom"
+              arrow
+              classes={{ tooltip: classes.tooltip }}
             >
-              <CommentIcon />
-              <span>Comment</span>
-            </button>
-          </Tooltip>
+              <button
+                onClick={() => setShowComment(!showComment)}
+                style={{ marginLeft: "auto" }}
+                type="button"
+              >
+                <CommentIcon />
+                <span>Comment</span>
+              </button>
+            </Tooltip>
+          )}
         </Row>
         {/* Comment section down below */}
         <Row>

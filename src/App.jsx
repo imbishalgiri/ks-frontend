@@ -4,7 +4,6 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Route, Routes } from "react-router-dom";
 
-
 import { ThemeProvider } from "styled-components";
 
 import { useTheme } from "./hooks";
@@ -16,13 +15,14 @@ import Signup from "./pages/signup/Signup";
 import GlobalStyles from "./styles/GlobalStyles";
 import { themes } from "./styles/themes";
 
+import SinglePost from "./pages/post";
+
 const App = () => {
   const { themeName } = useTheme();
   const currentTheme = themes[themeName];
 
   return (
     <ThemeProvider theme={currentTheme}>
-      <Layout />
       <GlobalStyles />
       <ToastContainer
         position="top-right"
@@ -36,12 +36,13 @@ const App = () => {
         pauseOnHover
       />
 
-    <Routes>
-        <Route path="/login" element={<Login />}/>
-        <Route path="/signup" element={<Signup />}/>
-    </Routes>
+      <Routes>
+        <Route path="/" element={<Layout />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/dashboard/:id" element={<SinglePost />} />
+      </Routes>
     </ThemeProvider>
-
   );
 };
 

@@ -2,6 +2,8 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
 import AxiosInstance from "../apis/axios";
 import { addToPostApi } from "../apis/posts";
+// end of imports
+
 const name = "post";
 const reducers = { name: () => ({}) };
 const initialState = {
@@ -9,14 +11,35 @@ const initialState = {
     loading: false,
     created: false,
   },
+  get: {
+    singlePost: {
+      loading: false,
+      data: [],
+    },
+    allPosts: [],
+  },
 };
-// this one is for async requests
+// asynchronous actions right here
 const extraActions = {
+  // 1) create single post
   addPost: createAsyncThunk(`${name}/addPost`, async (data) => {
     return await AxiosInstance.post("/posts/create", data);
   }),
+  // 2) get single post
+  getSinglePost: createAsyncThunk(`${name}/getSinglePost`, async (id) => {
+    return await AxiosInstance.get(`/posts/${id}`);
+  }),
 };
+
+// extracting states from actions
 const { pending, fulfilled, rejected } = extraActions.addPost;
+const {
+  pending: spPending,
+  fulfilled: spFulfilled,
+  rejected: spRejected,
+} = extraActions.getSinglePost;
+
+// hooking up extra reducers
 const extraReducers = {
   [pending]: (state) => ({ ...state, create: { loading: true } }),
   [fulfilled]: (state) => {
@@ -30,6 +53,37 @@ const extraReducers = {
     toast.error(action.error?.message);
     return { ...state, create: { loading: false } };
   },
+  //--------------------------------------------------
+  // for single post
+  [spPending]: (state) => ({
+    ...state,
+    get: {
+      ...state.get,
+      singlePost: { ...state.get.singlePost, loading: true },
+    },
+  }),
+  [spFulfilled]: (state, action) => ({
+    ...state,
+    get: {
+      ...state.get,
+      singlePost: {
+        ...state.get.singlePost,
+        loading: false,
+        data: action.payload?.data?.data,
+      },
+    },
+  }),
+  [spRejected]: (state, action) => {
+    toast.error(action?.error?.message);
+    return {
+      ...state,
+      get: {
+        ...state.get,
+        singlePost: { ...state.get.singlePost, loading: false },
+      },
+    };
+  },
+  // -----------------------------------------------------------
 };
 
 export const postSlice = createSlice({
@@ -39,8 +93,11 @@ export const postSlice = createSlice({
   extraReducers,
 });
 
-// this is for dispatch
-export const { addPost } = { ...postSlice.actions, ...extraActions };
+// exporting actions for dispatch
+export const { addPost, getSinglePost } = {
+  ...postSlice.actions,
+  ...extraActions,
+};
 
-// this is for configureStore
+// reducer to be hooked in the store
 export default postSlice.reducer;
