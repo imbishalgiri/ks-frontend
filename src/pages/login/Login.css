@@ -1,0 +1,42 @@
+.container {
+    background-color: rgb(200, 223, 238);
+    align-items: center;
+    text-align: center;
+    margin-top: 60px;
+    width: 50%;
+    border-radius: 1rem;
+    height: 80vh;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.field {
+    display: grid;
+}
+
+.ui form {
+    text-align: center;
+    align-items: center;
+}
+
+input {
+    margin-left: 50px;
+    margin-right: 50px;
+    border-radius: 0.4rem;
+    height: 40px;
+    background-color: rgb(232, 237, 241);
+}
+
+input.name {
+    align-items: left;
+    text-align: left;
+}
+
+button {
+    width: 60%;
+    background-color: rgb(84, 104, 253);
+    border-radius: 0.3rem;
+}
