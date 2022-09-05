@@ -1,0 +1,30 @@
+.App {
+  font-family: sans-serif;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.App form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.error-message {
+  color: rgba(255, 0, 0, 0.6);
+  margin-right: 20px;
+  margin-bottom: 5px;
+}
+
+.submit-button {
+  align-self: flex-start;
+}
+
+.input-field {
+  width: 400px;
+}
