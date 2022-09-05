@@ -31,11 +31,15 @@ import TextEditor from "../../components/common/textEditor";
 import { PostOptionsIcon } from "../../components/MiddleColumn/FeedPost/styles";
 import { FaThumbsUp, FaReply } from "react-icons/fa";
 import Comment from "../../components/comments/comment";
+import LoadingFeedShare from "../../components/Shimmer/LoadingFeedShare";
+import LoadingFeedPost from "../../components/Shimmer/LoadingFeedPost";
+import Skeleton from "../../components/Skeleton";
+import { useRef } from "react";
 const SinglePost = () => {
   const { changeTheme, themeName } = useTheme();
-  const [isLoading, setLoading] = useState(true);
   const dispatch = useDispatch();
   const { id: postId } = useParams();
+  const boxRef = useRef();
 
   const {
     get: {
@@ -54,18 +58,21 @@ const SinglePost = () => {
   };
 
   useEffect(() => {
-    dispatch(getSinglePost(postId));
-  }, []);
+    if (!loading) {
+      console.log("not loading");
+      boxRef?.current?.scrollIntoView();
+    }
+  }, [loading]);
 
   useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 1500);
+    dispatch(getSinglePost(postId));
   }, []);
 
   const toggleReply = () => {
     setReply((prev) => !prev);
   };
+
+  console.log("data is -->", data);
 
   return (
     <Container>
@@ -75,60 +82,88 @@ const SinglePost = () => {
       <br />
 
       <main>
-        <LeftColumn isLoading={isLoading} />
-        {/* post part */}
-        <Container style={{ width: "900px" }}>
-          <Box
-            style={{
-              width: "900px",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
+        <LeftColumn isLoading={loading} />
+        {loading && (
+          <Container
+            style={{ width: "900px", height: "1000px", padding: "20px" }}
           >
-            <Box style={{ padding: "20px" }}>
-              <FeedPost
-                avatar={"https://www.fillmurray.com/640/360"}
-                user="Facebook"
-                title="Company"
-                image={data?.post?.image}
-                hideComment
-              />
+            <LoadingFeedPost num={30} />
+          </Container>
+        )}
+        {/* post part */}
+        {!loading && (
+          <Container style={{ width: "900px" }}>
+            <Box
+              style={{
+                width: "900px",
+
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Box ref={boxRef} style={{ padding: "20px" }}>
+                <FeedPost
+                  avatar={"https://www.fillmurray.com/640/360"}
+                  user="Facebook"
+                  title="Company"
+                  image={data?.image}
+                  hideComment
+                  likeType=""
+                  single={true}
+                  allLikes={data?.likes}
+                  allComments={data?.comments}
+                />
+
+                <br />
+                <br />
+                <Typography
+                  dangerouslySetInnerHTML={{ __html: data.post?.description }}
+                ></Typography>
+
+                <br />
+
+                <TextEditor handleDescriptionChange={() => {}} />
+
+                <Button
+                  style={{
+                    marginTop: "100px",
+                    alignSelf: "flex-start",
+                    backgroundColor: "#4c5aa7",
+                    color: "#FFF",
+                  }}
+                >
+                  Add comment
+                </Button>
+              </Box>
+              <Box style={{ margin: "20px", width: "100%" }}>
+                {data?.comments?.map((singleData) => (
+                  <Comment
+                    name={
+                      singleData?.user?.firstName +
+                      " " +
+                      singleData?.user?.lastName
+                    }
+                    comment={singleData?.comment}
+                    avatar={""}
+                    replies={singleData?.replies}
+                    actualComment={singleData}
+                  />
+                ))}
+              </Box>
 
               <br />
               <br />
-              <Typography
-                dangerouslySetInnerHTML={{ __html: data.post?.description }}
-              ></Typography>
-
               <br />
-
-              <TextEditor handleDescriptionChange={() => {}} />
-
-              <Button
-                style={{
-                  marginTop: "100px",
-                  alignSelf: "flex-start",
-                  backgroundColor: "#4c5aa7",
-                  color: "#FFF",
-                }}
-              >
-                Add comment
-              </Button>
+              <br />
+              <br />
             </Box>
-            <Comment />
-
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-          </Box>
-        </Container>
+          </Container>
+        )}
 
         {/* end of post part */}
-        <RightColumn isLoading={isLoading} />
+        <RightColumn isLoading={loading} />
       </main>
 
       <div className="theme-container">

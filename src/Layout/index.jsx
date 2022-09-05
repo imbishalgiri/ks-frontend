@@ -20,8 +20,9 @@ import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
 import { FaHamburger } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { cleanAuth } from "../redux/authSlices";
+import { getAllPosts } from "../redux/postSlices";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -42,10 +43,16 @@ const Layout = () => {
   const classes = useStyles();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { data: postData, loading: postLoading } = useSelector(
+    (state) => state.post.get.allPosts
+  );
+
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
     }, 1500);
+
+    dispatch(getAllPosts());
   }, []);
 
   const handleLogout = () => {
@@ -80,9 +87,9 @@ const Layout = () => {
       </div>
 
       <main>
-        <LeftColumn isLoading={isLoading} />
-        <MiddleColumn isLoading={isLoading} />
-        <RightColumn isLoading={isLoading} />
+        <LeftColumn isLoading={false} />
+        <MiddleColumn isLoading={postLoading} postData={postData} />
+        <RightColumn isLoading={false} />
       </main>
       <div className="theme-container">
         <button type="button" onClick={changeTheme}>

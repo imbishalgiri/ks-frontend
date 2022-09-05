@@ -21,6 +21,7 @@ import {
   Avatar,
   Column,
   LikeIcon,
+  LikedIcon,
   CommentIcon,
   ShareIcon,
   SendIcon,
@@ -29,13 +30,52 @@ import {
   DisLikedIcon,
 } from "./styles";
 
-import { FaThumbsDown } from "react-icons/fa";
+import { FaThumbsDown, FaThumbsUp } from "react-icons/fa";
 import AddComment from "../../Comment/addComment";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { useEffect } from "react";
 
-const FeedPost = ({ user, title, avatar, image = "", hideComment = false }) => {
+const FeedPost = ({
+  user,
+  title,
+  avatar,
+  image = "",
+  hideComment = false,
+  allLikes = [],
+  allComments = [],
+  userName = "",
+  time = "",
+  post = "",
+  isLoading,
+  single = false,
+}) => {
   const classes = useStyles();
   const [isDisliked, setIsDisliked] = useState(false);
+  const [liked, setLiked] = useState(false);
   const [showComment, setShowComment] = useState(false);
+  const navigate = useNavigate();
+
+  const auth = useSelector((state) => state?.auth);
+  const curUser = auth?.user;
+
+  const likes = allLikes.filter((el) => el?.likeType === "u");
+  const disLikes = allLikes.filter((el) => el?.likeType === "d");
+
+  // handeling likes in here
+  useEffect(() => {
+    if (Array.isArray(likes) && likes?.length) {
+      const foundUser = likes.find((el) => el?.user?._id === curUser?._id);
+      if (foundUser) setLiked(true);
+    }
+    if (Array.isArray(disLikes) && disLikes?.length) {
+      const foundUser = disLikes.find((el) => el?.user?._id === curUser?._id);
+      if (foundUser) setIsDisliked(true);
+    }
+  }, [likes?.length, disLikes?.length]);
+  // handeling likes in here
+
+  console.log(likes, disLikes);
 
   const reactions = useMemo(() => ["like", "unlike"], []);
   const slicedReactions = useMemo(
@@ -46,11 +86,6 @@ const FeedPost = ({ user, title, avatar, image = "", hideComment = false }) => {
     () => kFormatter(Math.floor(Math.random() * (10000 - 1)) + 1),
     []
   );
-  const likes = useMemo(
-    () => kFormatter(Math.floor(Math.random() * (10000 - 1)) + 1),
-    []
-  );
-  const time = useMemo(() => Math.floor(Math.random() * (24 - 1)) + 1, []);
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -59,6 +94,15 @@ const FeedPost = ({ user, title, avatar, image = "", hideComment = false }) => {
   };
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleNavigate = () => {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "smooth",
+    });
+    navigate(`dashboard/${post}`);
   };
 
   return (
@@ -70,12 +114,12 @@ const FeedPost = ({ user, title, avatar, image = "", hideComment = false }) => {
             <h3>{user}</h3>
             <h4>{"Software Engineering student at ncit"}</h4>
             <Tooltip
-              title={`${user} posted ${time}h ago`}
+              title={`${user} posted ${time}`}
               placement="bottom"
               arrow
               classes={{ tooltip: classes.tooltip }}
             >
-              <time>{`${time}h`}</time>
+              <time>{time}</time>
             </Tooltip>
           </Column>
           <div className="post-options" onClick={handleClick}>
@@ -102,6 +146,8 @@ const FeedPost = ({ user, title, avatar, image = "", hideComment = false }) => {
           </Menu>
         </Row>
         <PostImage
+          style={{ cursor: "pointer" }}
+          onClick={!single && handleNavigate}
           src={
             image ||
             "https://blog.rocketseat.com.br/content/images/2019/05/Painel.png"
@@ -109,37 +155,62 @@ const FeedPost = ({ user, title, avatar, image = "", hideComment = false }) => {
           alt="Rocketseat Blog"
         />
         <Row className="likes">
-          <span className={`circle ${reactions[0]}`} />
+          <Tooltip
+            title={
+              <Box>
+                {!likes?.length && "no likes"}
+                {likes?.map((singleLike) => (
+                  <Box>
+                    {singleLike?.user?.firstName +
+                      " " +
+                      singleLike?.user?.lastName}
+                  </Box>
+                ))}
+              </Box>
+            }
+            placement="bottom"
+            arrow
+            classes={{ tooltip: classes.tooltip }}
+          >
+            <Box>
+              <FaThumbsUp color={"#7185f6"} />
+              <span className="number">{likes?.length || 0}</span>
+            </Box>
+          </Tooltip>
 
           <Tooltip
-            title={`${likes} users likes this post`}
+            title={
+              <Box>
+                {!disLikes?.length && "no disikes"}
+                {disLikes?.map((singleLike) => (
+                  <Box>
+                    {singleLike?.user?.firstName +
+                      " " +
+                      singleLike?.user?.lastName}
+                  </Box>
+                ))}
+              </Box>
+            }
             placement="bottom"
             arrow
             classes={{ tooltip: classes.tooltip }}
           >
-            <span className="number">{likes}</span>
-          </Tooltip>
-          <span
-            style={{ marginLeft: "1rem" }}
-            className={`circle ${reactions[1]}`}
-          />
-          <Tooltip
-            title={`${likes} users dislikes on post`}
-            placement="bottom"
-            arrow
-            classes={{ tooltip: classes.tooltip }}
-          >
-            <span className="number">{likes}</span>
+            <Box style={{ marginLeft: "25px", marginRight: "10px" }}>
+              <FaThumbsDown style={{ marginTop: "1px" }} color={"#7185f6"} />
+              <span className="number">{disLikes?.length || 0}</span>
+            </Box>
           </Tooltip>
 
           <span className="number">•</span>
           <Tooltip
-            title={`${comments} users commented on this post`}
+            title={`${allComments?.length || 0} users commented on this post`}
             placement="bottom"
             arrow
             classes={{ tooltip: classes.tooltip }}
           >
-            <span className="number">{`${comments} Comments`}</span>
+            <span className="number">{`${
+              allComments?.length || 0
+            } Comments`}</span>
           </Tooltip>
         </Row>
         <Row>
@@ -153,7 +224,8 @@ const FeedPost = ({ user, title, avatar, image = "", hideComment = false }) => {
             classes={{ tooltip: classes.tooltip }}
           >
             <button type="button">
-              <LikeIcon />
+              {!liked && <LikeIcon />}
+              {liked && <LikedIcon />}
             </button>
           </Tooltip>
           <Tooltip
@@ -192,10 +264,13 @@ const FeedPost = ({ user, title, avatar, image = "", hideComment = false }) => {
         </Row>
         {showComment && (
           <Row style={{ display: "block" }}>
-            <AddComment />
-            <AddComment />
-            <AddComment />
-            <AddComment />
+            {allComments?.map((singleComment) => (
+              <AddComment
+                likes={singleComment?.likes}
+                replies={singleComment?.replies}
+                description={singleComment?.comment}
+              />
+            ))}
             <br />
             <Box display={"flex"}>
               <Avatar style={{ opacity: "0", cursor: "default" }} src="null" />

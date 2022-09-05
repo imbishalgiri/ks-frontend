@@ -5,7 +5,11 @@ import Skeleton from "../../Skeleton";
 
 import { Container } from "./styles";
 
-const LoadingFeedPost = () => {
+const LoadingFeedPost = ({ num = 0 }) => {
+  const ske = [];
+  for (let i = 0; i < num; i++) {
+    ske.push(<Skeleton className="row-skeleton" />);
+  }
   return (
     <Container>
       <Panel className="no-shadow">
@@ -19,6 +23,7 @@ const LoadingFeedPost = () => {
         <span>
           <Skeleton className="row-skeleton" />
           <Skeleton className="row-skeleton" />
+          {ske}
         </span>
       </Panel>
     </Container>

@@ -10,11 +10,14 @@ import facebook from "../../assets/img/facebook.png";
 import rocketseat from "../../assets/img/rocketseat.png";
 
 import { Container, DownIcon } from "./styles";
+import { getTimeDiff } from "../../utils/utilities";
+import moment from "moment/moment";
 
-const MiddleColumn = ({ isLoading }) => {
+const MiddleColumn = ({ isLoading, postData = [] }) => {
+  console.log("post data inside -->", postData);
   return (
     <Container className="middle-column">
-      {isLoading ? (
+      {isLoading && !postData?.length ? (
         <>
           <LoadingFeedShare />
           <LoadingFeedPost />
@@ -25,26 +28,45 @@ const MiddleColumn = ({ isLoading }) => {
       ) : (
         <>
           <FeedShare />
-          <div className="seprator">
-            <div className="line" />
-            <span>
-              Sort by:
-              <strong> Top</strong>
-            </span>
-            <DownIcon />
-          </div>
-          <FeedPost
-            avatar="https://github.com/leoronne.png"
-            user="Leonardo Ronne"
-            title="Front-end Developer at Memed"
-          />
-          <FeedPost
-            avatar={rocketseat}
-            user="Rocketseat"
-            title="Educational institution"
-          />
-          <FeedPost avatar={facebook} user="Facebook" title="Company" />
-          <FeedPost avatar={twitter} user="Twitter" title="Company" />
+          {postData?.length === 0 ? (
+            "Nothing to show for you"
+          ) : (
+            <>
+              <div className="seprator">
+                <div className="line" />
+                {/* <span>
+                  Sort by:
+                  <strong> Top</strong>
+                </span>
+                <DownIcon /> */}
+              </div>
+              {postData?.map((data) => {
+                return (
+                  <FeedPost
+                    avatar="https://github.com/leoronne.png"
+                    user={
+                      data?.user?.firstName + " " + data?.user?.lastName ||
+                      "Unknown User"
+                    }
+                    title="Front-end Developer at Memed"
+                    image={data.image || ""}
+                    allLikes={data.likes}
+                    allComments={data.comments}
+                    key={data?._id}
+                    post={data?._id}
+                    time={moment(data?.createdAt)?.fromNow()}
+                  />
+                );
+              })}
+              {/* <FeedPost
+                avatar={rocketseat}
+                user="Rocketseat"
+                title="Educational institution"
+              />
+              <FeedPost avatar={facebook} user="Facebook" title="Company" />
+              <FeedPost avatar={twitter} user="Twitter" title="Company" /> */}
+            </>
+          )}
         </>
       )}
     </Container>

@@ -8,7 +8,7 @@ import {
 } from "@material-ui/core";
 import { useState } from "react";
 
-const AddComment = () => {
+const AddComment = ({ image = "", description, likes = [], replies = [] }) => {
   return (
     <Box style={{ marginTop: "1rem" }}>
       <Box style={{ display: "flex" }}>
@@ -23,23 +23,20 @@ const AddComment = () => {
           }}
         >
           <Box component={"span"}>
-            <Typography style={{ fontSize: "1rem" }}>
-              hi there hi there hi there hi there hi there hi there hi there hi
-              there hi there hi there hi there hi there hi there hi there hi
-              there hi there hi there hi there
-            </Typography>
+            <Typography style={{ fontSize: "1rem" }}>{description}</Typography>
           </Box>
         </Box>
       </Box>
       <small style={{ marginLeft: "5rem" }}>
-        <span style={{ color: "#3170ac", cursor: "pointer" }}>
-          <span style={{ color: "#515050" }}>3</span> likes
-        </span>
-        <span
+        <small style={{ color: "#3170ac", cursor: "pointer" }}>
+          {likes?.length}
+          {likes?.length > 1 ? " likes" : " like"}
+        </small>
+        <small
           style={{ color: "#3170ac", marginLeft: "1rem", cursor: "pointer" }}
         >
-          reply
-        </span>
+          {replies?.length} {replies?.length > 1 ? " replies" : " reply"}
+        </small>
       </small>
     </Box>
   );

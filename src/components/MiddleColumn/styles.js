@@ -1,6 +1,6 @@
 /* eslint-disable import/prefer-default-export */
-import styled from 'styled-components';
-import { FiChevronDown } from 'react-icons/fi';
+import styled from "styled-components";
+import { FiChevronDown } from "react-icons/fi";
 
 export const Container = styled.div`
   padding: 15px;
@@ -16,9 +16,11 @@ export const Container = styled.div`
     align-items: center;
     justify-content: space-between;
     > .line {
-      background-color: var(--color-hashtag);
-      height: 1px;
-      width: 85%;
+      background-color: #ddd;
+      height: 4px;
+      width: 100%;
+      margin: 10px 0;
+      border-radius: 10px;
     }
     > span {
       padding: 0 5px;

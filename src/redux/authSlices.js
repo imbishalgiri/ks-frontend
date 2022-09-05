@@ -11,8 +11,15 @@ const initialState = {
   isLoggedIn: false,
 };
 
+// combination of normal actions and reducers
 const reducers = {
-  addUser: (state, action) => ({ ...state, user: action.payload }),
+  // 1) Action
+  addUser: (state, action) => ({
+    ...state,
+    user: action.payload,
+    isLoggedIn: true,
+  }),
+  // 2) Action
   cleanAuth: (state) => ({
     ...state,
     user: {},
@@ -23,7 +30,7 @@ const reducers = {
 
 // asynchronous actions right here
 const extraActions = {
-  // 1) create single post
+  // 1) Login action
   login: createAsyncThunk(`${name}/login`, async (data) => {
     return await AxiosInstance.post("/auth/login", data);
   }),

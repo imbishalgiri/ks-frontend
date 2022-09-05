@@ -10,11 +10,18 @@ import {
   TextField,
   Typography,
 } from "@material-ui/core";
+import moment from "moment";
 import { useState } from "react";
 import { FaReply, FaThumbsUp } from "react-icons/fa";
 import { PostOptionsIcon } from "../MiddleColumn/FeedPost/styles";
 
-const Comment = () => {
+const Comment = ({
+  avatar = "",
+  replies: [],
+  name = "",
+  comment = "",
+  actualComment = {},
+}) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [reply, setReply] = useState(false);
   const open = Boolean(anchorEl);
@@ -30,21 +37,27 @@ const Comment = () => {
   };
 
   return (
-    <Paper style={{ padding: "40px 20px", marginTop: 100, margin: "20px" }}>
+    <Paper
+      style={{
+        padding: "40px 20px",
+        marginTop: 100,
+        margin: "20px",
+      }}
+    >
       <Grid container wrap="nowrap" spacing={2}>
         <Grid item></Grid>
         <Grid justifyContent="left" item xs zeroMinWidth>
           <Grid container justifyContent="space-between" alignItems="center">
             <Avatar
               alt="Remy Sharp"
-              src={"https://www.fillmurray.com/640/360"}
+              src={avatar || "https://www.fillmurray.com/640/360"}
             />
             <Typography
               component={"span"}
               variant="h6"
               style={{ margin: "0 0 0 15px", textAlign: "left" }}
             >
-              <strong> Michel Michel</strong>
+              <strong> {name}</strong>
             </Typography>
             <IconButton
               style={{ marginLeft: "auto" }}
@@ -74,27 +87,22 @@ const Comment = () => {
             </Menu>
           </Grid>
           <br />
-          <p style={{ textAlign: "left", marginTop: "" }}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean
-            luctus ut est sed faucibus. Duis bibendum ac ex vehicula laoreet.
-            Suspendisse congue vulputate lobortis. Pellentesque at interdum
-            tortor. Quisque arcu quam, malesuada vel mauris et, posuere sagittis
-            ipsum. Aliquam ultricies a ligula nec faucibus. In elit metus,
-            efficitur lobortis nisi quis, molestie porttitor metus. Pellentesque
-            et neque risus. Aliquam vulputate, mauris vitae tincidunt interdum,
-            mauris mi vehicula urna, nec feugiat quam lectus vitae ex.{" "}
-          </p>
-          <p
+          <p style={{ textAlign: "left", marginTop: "" }}>{comment}</p>
+          <br />
+          <small
             style={{
               textAlign: "left",
               color: "gray",
-              marginTop: "10px",
+              marginTop: "5px",
             }}
           >
-            posted 1 minute ago
-          </p>
+            {moment(actualComment?.createdAt).fromNow()}
+          </small>
           <br />
-          <FaThumbsUp style={{ cursor: "pointer", color: "#474545" }} /> {"10"}
+          <br />
+
+          <FaThumbsUp style={{ cursor: "pointer", color: "#474545" }} />
+          {" " + actualComment?.likes?.length}
           <FaReply
             style={{ marginLeft: "20px", cursor: "pointer" }}
             onClick={toggleReply}
@@ -117,40 +125,30 @@ const Comment = () => {
               </Box>
             </>
           )}
-          <Box
-            style={{
-              padding: "10px 30px",
-              background: "#ddd",
-              borderRadius: "10px",
-              margin: "20px 0 20px 10px",
-            }}
-          >
-            <Box style={{ display: "flex", alignItems: "center" }}>
-              <Avatar />
-              <span style={{ marginLeft: "10px" }}>My name</span>
-            </Box>
-            <Box>
-              ho therwardadf ho therwardadf ho therwardadf ho therwardadfho
-              therwardadf ho therwardadf ho therwardadf ho therwardadf
-            </Box>
-          </Box>
-          <Box
-            style={{
-              padding: "10px 30px",
-              background: "#ddd",
-              borderRadius: "10px",
-              margin: "10px 0 10px 10px",
-            }}
-          >
-            <Box style={{ display: "flex", alignItems: "center" }}>
-              <Avatar />
-              <span style={{ marginLeft: "10px" }}>My name</span>
-            </Box>
-            <Box>
-              ho therwardadf ho therwardadf ho therwardadf ho therwardadfho
-              therwardadf ho therwardadf ho therwardadf ho therwardadf
-            </Box>
-          </Box>
+          {actualComment?.replies?.map((singleActual) => {
+            return (
+              <Box
+                style={{
+                  padding: "10px 30px",
+                  background: "#ddd",
+                  borderRadius: "10px",
+                  margin: "10px 0 10px 10px",
+                }}
+              >
+                <Box style={{ display: "flex", alignItems: "center" }}>
+                  <Avatar />
+                  <span style={{ marginLeft: "10px" }}>
+                    {singleActual?.user?.firstName +
+                      " " +
+                      singleActual?.user?.lastName}
+                  </span>
+                </Box>
+                <Box style={{ marginLeft: "50px" }}>
+                  {singleActual?.description}
+                </Box>
+              </Box>
+            );
+          })}
           <br />
         </Grid>
       </Grid>

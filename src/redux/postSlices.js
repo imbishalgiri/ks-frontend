@@ -16,7 +16,10 @@ const initialState = {
       loading: false,
       data: [],
     },
-    allPosts: [],
+    allPosts: {
+      loading: false,
+      data: [],
+    },
   },
 };
 // asynchronous actions right here
@@ -29,6 +32,10 @@ const extraActions = {
   getSinglePost: createAsyncThunk(`${name}/getSinglePost`, async (id) => {
     return await AxiosInstance.get(`/posts/${id}`);
   }),
+  // 3) get all posts
+  getAllPosts: createAsyncThunk(`${name}/getAllPosts`, async (data) => {
+    return await AxiosInstance.get("/posts");
+  }),
 };
 
 // extracting states from actions
@@ -38,6 +45,12 @@ const {
   fulfilled: spFulfilled,
   rejected: spRejected,
 } = extraActions.getSinglePost;
+
+const {
+  pending: apPending,
+  fulfilled: apFulfilled,
+  rejected: apRejected,
+} = extraActions.getAllPosts;
 
 // hooking up extra reducers
 const extraReducers = {
@@ -84,6 +97,39 @@ const extraReducers = {
     };
   },
   // -----------------------------------------------------------
+  // for all posts
+  [apPending]: (state) => ({
+    ...state,
+    get: {
+      ...state.get,
+      allPosts: {
+        ...state.get.allPosts,
+        loading: true,
+      },
+    },
+  }),
+  [apFulfilled]: (state, action) => ({
+    ...state,
+    get: {
+      ...state.get,
+      allPosts: {
+        ...state.get.allPosts,
+        loading: false,
+        data: action.payload?.data?.data,
+      },
+    },
+  }),
+  [apRejected]: (state, action) => {
+    toast.error(action?.error?.message);
+    return {
+      ...state,
+      get: state.get,
+      allPosts: {
+        ...state.get.allPosts,
+        loading: false,
+      },
+    };
+  },
 };
 
 export const postSlice = createSlice({
@@ -94,7 +140,7 @@ export const postSlice = createSlice({
 });
 
 // exporting actions for dispatch
-export const { addPost, getSinglePost } = {
+export const { addPost, getSinglePost, getAllPosts } = {
   ...postSlice.actions,
   ...extraActions,
 };
