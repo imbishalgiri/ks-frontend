@@ -42,22 +42,21 @@ import Skeleton from "../../components/Skeleton";
 import { useRef } from "react";
 import { toast } from "react-toastify";
 import { addComment } from "../../redux/commentSlices";
-import io from "socket.io-client";
+import { SocketContext } from "../../context/socket";
+import { useContext } from "react";
+import Appbar from "../../components/appbar";
 const SinglePost = () => {
-  const ENDPOINT = "http://localhost:5000";
   const { changeTheme, themeName } = useTheme();
   const dispatch = useDispatch();
   const { id: postId } = useParams();
   const boxRef = useRef();
   const { isCommenting, isCommented } = useSelector((state) => state.comment);
-
+  const socket = useContext(SocketContext);
   const {
     get: {
       singlePost: { loading, data },
     },
   } = useSelector((state) => state.post);
-
-  let socket;
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [reply, setReply] = useState(false);
@@ -72,7 +71,6 @@ const SinglePost = () => {
 
   // socket operations in here
   useEffect(() => {
-    socket = io(ENDPOINT);
     socket.on("receiveComment", (comment) => {
       dispatch(addCommentStatic(comment));
     });
@@ -80,7 +78,8 @@ const SinglePost = () => {
     socket.on("receiveReply", (reply) => {
       dispatch(addReplyStatic(reply));
     });
-  });
+  }, [socket]);
+
   useEffect(() => {
     if (postId && socket) {
       socket.emit("joinPost", postId);
@@ -88,11 +87,11 @@ const SinglePost = () => {
   }, [postId]);
   //-----------------------------------------------------------
 
-  useEffect(() => {
-    if (!loading) {
-      boxRef?.current?.scrollIntoView();
-    }
-  }, [loading]);
+  // useEffect(() => {
+  //   if (!loading) {
+  //     boxRef?.current?.scrollIntoView();
+  //   }
+  // }, [loading]);
 
   useEffect(() => {
     dispatch(getSinglePost(postId));
@@ -102,6 +101,7 @@ const SinglePost = () => {
     if (isCommented) {
       // if comment succeeded,send comment to the socket
       socket.emit("addComment", isCommented, postId);
+      dispatch(addCommentStatic(isCommented));
       setComment(null);
     }
   }, [isCommented]);
@@ -121,12 +121,9 @@ const SinglePost = () => {
 
   return (
     <Container>
-      <DesktopHeader />
+      <Appbar />
 
-      <br />
-      <br />
-
-      <main>
+      <main style={{ marginTop: "100px" }}>
         <LeftColumn isLoading={false} />
         {loading && (
           <Container
@@ -148,10 +145,16 @@ const SinglePost = () => {
                 justifyContent: "center",
               }}
             >
-              <Box ref={boxRef} style={{ padding: "20px" }}>
+              <Box
+                ref={boxRef}
+                style={{ padding: "0 20px", marginTop: "-12px" }}
+              >
                 <FeedPost
-                  avatar={"https://www.fillmurray.com/640/360"}
-                  user="Facebook"
+                  avatar={`${
+                    data?.user?.avatar ||
+                    "https://placehold.jp/626c62/ffffff/150x150.png?text=KS%20USER"
+                  }`}
+                  user={data?.user?.firstName + " " + data?.user?.lastName}
                   title="Company"
                   image={data?.image}
                   hideComment
@@ -205,11 +208,10 @@ const SinglePost = () => {
                       singleData?.user?.lastName
                     }
                     comment={singleData?.comment}
-                    avatar={""}
+                    avatar={singleData?.user?.avatar}
                     replies={singleData?.replies}
                     actualComment={singleData}
                     commentId={singleData?._id}
-                    socket={socket}
                     postId={postId}
                   />
                 ))}
@@ -227,15 +229,6 @@ const SinglePost = () => {
         {/* end of post part */}
         <RightColumn isLoading={false} />
       </main>
-
-      <div className="theme-container">
-        <button type="button" onClick={changeTheme}>
-          <VersionIcon />
-          <span>{`Change to the ${
-            themeName === "new" ? "old" : "new"
-          } version`}</span>
-        </button>
-      </div>
     </Container>
   );
 };

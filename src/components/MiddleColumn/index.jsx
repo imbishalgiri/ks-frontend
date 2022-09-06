@@ -43,7 +43,10 @@ const MiddleColumn = ({ isLoading, postData = [] }) => {
               {postData?.map((data) => {
                 return (
                   <FeedPost
-                    avatar="https://github.com/leoronne.png"
+                    avatar={`${
+                      data?.user?.avatar ||
+                      "https://placehold.jp/626c62/ffffff/150x150.png?text=KS%20USER"
+                    }`}
                     user={
                       data?.user?.firstName + " " + data?.user?.lastName ||
                       "Unknown User"

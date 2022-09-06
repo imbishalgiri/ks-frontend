@@ -14,7 +14,8 @@ const LeftColumn = ({ isLoading }) => {
       ) : (
         <>
           <ProfilePanel />
-          <HashtagPanel />
+
+          {/* <HashtagPanel /> */}
         </>
       )}
     </Container>

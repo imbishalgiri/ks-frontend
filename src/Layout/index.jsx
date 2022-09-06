@@ -23,6 +23,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { cleanAuth } from "../redux/authSlices";
 import { getAllPosts } from "../redux/postSlices";
+import Appbar from "../components/appbar";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -65,8 +66,8 @@ const Layout = () => {
     <Container>
       <DesktopHeader />
 
-      <div className={classes.root}>
-        <AppBar position="static">
+      {/* <div className={classes.root}> */}
+      {/* <AppBar position="static">
           <Toolbar>
             <IconButton
               edge="start"
@@ -83,22 +84,15 @@ const Layout = () => {
               Logout
             </Button>
           </Toolbar>
-        </AppBar>
-      </div>
+        </AppBar> */}
+      <Appbar />
+      {/* </div> */}
 
-      <main>
+      <main style={{ marginTop: "100px" }}>
         <LeftColumn isLoading={false} />
         <MiddleColumn isLoading={postLoading} postData={postData} />
         <RightColumn isLoading={false} />
       </main>
-      <div className="theme-container">
-        <button type="button" onClick={changeTheme}>
-          <VersionIcon />
-          <span>{`Change to the ${
-            themeName === "new" ? "old" : "new"
-          } version`}</span>
-        </button>
-      </div>
     </Container>
   );
 };

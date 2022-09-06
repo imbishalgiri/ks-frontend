@@ -20,7 +20,8 @@ import { toast } from "react-toastify";
 import { addReply } from "../../redux/commentSlices";
 import { addReplyStatic } from "../../redux/postSlices";
 import { PostOptionsIcon } from "../MiddleColumn/FeedPost/styles";
-import io from "socket.io-client";
+import { SocketContext } from "../../context/socket";
+import { useContext } from "react";
 
 const Comment = ({
   avatar = "",
@@ -37,21 +38,17 @@ const Comment = ({
   // const [commentId, setCommentId] = useState("");
 
   const dispatch = useDispatch(false);
-  let socket;
+  const socket = useContext(SocketContext);
 
   const { isReplying, isReplied } = useSelector((state) => state.comment);
   const { user } = useSelector((state) => state.auth);
-
-  useEffect(() => {
-    socket = io("http://localhost:5000");
-  });
 
   // if replied, send replied to the socket
   useEffect(() => {
     if (isReplied) {
       setReplyData("");
       socket?.emit("addReply", isReplied, postId);
-      // dispatch(addReplyStatic({ ...isReplied }));
+      dispatch(addReplyStatic({ ...isReplied }));
     }
   }, [isReplied]);
 
@@ -205,7 +202,7 @@ const Comment = ({
                 }}
               >
                 <Box style={{ display: "flex", alignItems: "center" }}>
-                  <Avatar />
+                  <Avatar src={singleActual?.user?.avatar} />
                   <span style={{ marginLeft: "10px" }}>
                     {singleActual?.user?.firstName +
                       " " +

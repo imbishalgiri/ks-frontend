@@ -30,7 +30,14 @@ const Login = () => {
   };
 
   return (
-    <div className="App">
+    <div
+      className="App"
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
       <form onSubmit={handleSubmit(onSubmit)}>
         <Box
           style={{

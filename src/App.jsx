@@ -19,6 +19,9 @@ import { themes } from "./styles/themes";
 import SinglePost from "./pages/post";
 import { addUser } from "./redux/authSlices";
 import { useDispatch } from "react-redux";
+import { SocketContext, socket } from "./context/socket";
+import Protected from "./components/protected";
+import UserProfile from "./pages/userProfile";
 
 const App = () => {
   const { themeName } = useTheme();
@@ -30,27 +33,62 @@ const App = () => {
 
   return (
     <ThemeProvider theme={currentTheme}>
-      <GlobalStyles />
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
-
-      <Routes>
-        <Route path="/" element={<Layout />} />
-        <Route path="/dashboard" element={<Layout />} />
-
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/dashboard/:id" element={<SinglePost />} />
-      </Routes>
+      <SocketContext.Provider value={socket}>
+        <GlobalStyles />
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
+        {/* ---------------- */}
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <Protected>
+                <Layout />
+              </Protected>
+            }
+          />
+          {/* ------------------ */}
+          <Route
+            path="/dashboard"
+            element={
+              <Protected>
+                <Layout />
+              </Protected>
+            }
+          />
+          {/* --------------------- */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          {/* --------------------- */}
+          <Route
+            path="/dashboard/:id"
+            element={
+              <Protected>
+                <SinglePost />
+              </Protected>
+            }
+          />
+          {/* --------------------- */}
+          <Route
+            path="/profile/:id"
+            element={
+              <Protected>
+                <UserProfile />
+              </Protected>
+            }
+          />
+          {/* --------------------- */}
+        </Routes>
+      </SocketContext.Provider>
     </ThemeProvider>
   );
 };

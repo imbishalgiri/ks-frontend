@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 import React, { useMemo } from "react";
+import { useSelector } from "react-redux";
 
 import kFormatter from "../../../utils/kFormatter";
 import openPage from "../../../utils/openPage";
@@ -19,33 +20,43 @@ const ProfilePanel = () => {
     []
   );
 
+  const { user } = useSelector((state) => state?.auth);
+
   return (
-    <Panel>
-      <Container>
-        <div className="premium-border" />
-        <div className="profile-cover" />
-        <img
-          src="https://github.com/leoronne.png"
-          alt="Avatar"
-          className="profile-picture"
-          onClick={() => openPage("in/leoronne")}
-        />
-        <h1>Ks User</h1>
-        <h2>Be.Software 8th semester</h2>
+    <div style={{ top: "80px", position: "sticky" }}>
+      <Panel>
+        <Container>
+          <div className="title">
+            <div className="premium-border" />
+            <div className="profile-cover" />
+            <img
+              src={`${
+                user?.avatar ||
+                "https://placehold.jp/626c62/ffffff/150x150.png?text=KS%20USER"
+              }`}
+              alt="Avatar"
+              className="profile-picture"
+              onClick={() => openPage("in/leoronne")}
+            />
+            <h1>{user?.firstName + " " + user?.lastName}</h1>
+            <h2>Be.Software 8th semester</h2>
 
-        <div className="separator" />
+            <div className="separator" />
 
-        <div className="key-value">
-          <span className="key">Views of your post</span>
-          <span className="value">{post}</span>
-        </div>
-        <div className="separator" />
-        <div className="saved-items" onClick={() => openPage("feed/saved")}>
-          <SaveIcon />
-          <span>Pinned Posts</span>
-        </div>
-      </Container>
-    </Panel>
+            <div className="key-value">
+              <span className="key">Views of your post</span>
+              <span className="value">{post}</span>
+            </div>
+            <div className="separator" />
+            <div className="saved-items" onClick={() => openPage("feed/saved")}>
+              <SaveIcon />
+              <span>Pinned Posts</span>
+            </div>
+          </div>
+        </Container>
+      </Panel>
+      <Panel style={{ marginTop: "30px", padding: "20px" }}>Hi there</Panel>
+    </div>
   );
 };
 
