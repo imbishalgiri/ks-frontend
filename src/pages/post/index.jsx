@@ -9,7 +9,11 @@ import {
   MiddleColumn,
   RightColumn,
 } from "../../components";
-import { getSinglePost } from "../../redux/postSlices";
+import {
+  addCommentStatic,
+  addReplyStatic,
+  getSinglePost,
+} from "../../redux/postSlices";
 
 import { Container, VersionIcon } from "./styles";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,6 +22,7 @@ import {
   Avatar,
   Box,
   Button,
+  CircularProgress,
   Grid,
   IconButton,
   Menu,
@@ -35,11 +40,16 @@ import LoadingFeedShare from "../../components/Shimmer/LoadingFeedShare";
 import LoadingFeedPost from "../../components/Shimmer/LoadingFeedPost";
 import Skeleton from "../../components/Skeleton";
 import { useRef } from "react";
+import { toast } from "react-toastify";
+import { addComment } from "../../redux/commentSlices";
+import io from "socket.io-client";
 const SinglePost = () => {
+  const ENDPOINT = "http://localhost:5000";
   const { changeTheme, themeName } = useTheme();
   const dispatch = useDispatch();
   const { id: postId } = useParams();
   const boxRef = useRef();
+  const { isCommenting, isCommented } = useSelector((state) => state.comment);
 
   const {
     get: {
@@ -47,8 +57,11 @@ const SinglePost = () => {
     },
   } = useSelector((state) => state.post);
 
+  let socket;
+
   const [anchorEl, setAnchorEl] = useState(null);
   const [reply, setReply] = useState(false);
+  const [comment, setComment] = useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -57,9 +70,26 @@ const SinglePost = () => {
     setAnchorEl(null);
   };
 
+  // socket operations in here
+  useEffect(() => {
+    socket = io(ENDPOINT);
+    socket.on("receiveComment", (comment) => {
+      dispatch(addCommentStatic(comment));
+    });
+
+    socket.on("receiveReply", (reply) => {
+      dispatch(addReplyStatic(reply));
+    });
+  });
+  useEffect(() => {
+    if (postId && socket) {
+      socket.emit("joinPost", postId);
+    }
+  }, [postId]);
+  //-----------------------------------------------------------
+
   useEffect(() => {
     if (!loading) {
-      console.log("not loading");
       boxRef?.current?.scrollIntoView();
     }
   }, [loading]);
@@ -68,11 +98,26 @@ const SinglePost = () => {
     dispatch(getSinglePost(postId));
   }, []);
 
+  useEffect(() => {
+    if (isCommented) {
+      // if comment succeeded,send comment to the socket
+      socket.emit("addComment", isCommented, postId);
+      setComment(null);
+    }
+  }, [isCommented]);
+
   const toggleReply = () => {
     setReply((prev) => !prev);
   };
-
-  console.log("data is -->", data);
+  const handleCommentAdd = () => {
+    if (!comment || comment === "<p></p>")
+      return toast.info("Nothing to comment");
+    const submitData = {
+      post: data?._id,
+      comment,
+    };
+    dispatch(addComment(submitData));
+  };
 
   return (
     <Container>
@@ -82,7 +127,7 @@ const SinglePost = () => {
       <br />
 
       <main>
-        <LeftColumn isLoading={loading} />
+        <LeftColumn isLoading={false} />
         {loading && (
           <Container
             style={{ width: "900px", height: "1000px", padding: "20px" }}
@@ -124,22 +169,36 @@ const SinglePost = () => {
 
                 <br />
 
-                <TextEditor handleDescriptionChange={() => {}} />
+                <TextEditor
+                  handleDescriptionChange={(data) => {
+                    setComment(data);
+                  }}
+                  clear={isCommented}
+                />
 
                 <Button
+                  onClick={handleCommentAdd}
                   style={{
                     marginTop: "100px",
                     alignSelf: "flex-start",
                     backgroundColor: "#4c5aa7",
                     color: "#FFF",
+                    textTransform: "none",
                   }}
                 >
-                  Add comment
+                  {!isCommenting && "Add comment"}
+                  {isCommenting && (
+                    <CircularProgress
+                      size={"30px"}
+                      style={{ color: "#fff", margin: "0 30px" }}
+                    />
+                  )}
                 </Button>
               </Box>
               <Box style={{ margin: "20px", width: "100%" }}>
                 {data?.comments?.map((singleData) => (
                   <Comment
+                    key={singleData?._id}
                     name={
                       singleData?.user?.firstName +
                       " " +
@@ -149,6 +208,9 @@ const SinglePost = () => {
                     avatar={""}
                     replies={singleData?.replies}
                     actualComment={singleData}
+                    commentId={singleData?._id}
+                    socket={socket}
+                    postId={postId}
                   />
                 ))}
               </Box>
@@ -163,7 +225,7 @@ const SinglePost = () => {
         )}
 
         {/* end of post part */}
-        <RightColumn isLoading={loading} />
+        <RightColumn isLoading={false} />
       </main>
 
       <div className="theme-container">

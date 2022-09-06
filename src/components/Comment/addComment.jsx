@@ -23,7 +23,10 @@ const AddComment = ({ image = "", description, likes = [], replies = [] }) => {
           }}
         >
           <Box component={"span"}>
-            <Typography style={{ fontSize: "1rem" }}>{description}</Typography>
+            <Typography
+              style={{ fontSize: "1rem" }}
+              dangerouslySetInnerHTML={{ __html: description }}
+            ></Typography>
           </Box>
         </Box>
       </Box>

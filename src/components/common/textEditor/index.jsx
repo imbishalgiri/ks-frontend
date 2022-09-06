@@ -1,20 +1,27 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { EditorState } from "draft-js";
 import { Editor } from "react-draft-wysiwyg";
 import { convertToHTML } from "draft-convert";
 import DOMPurify from "dompurify";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import "./styles.css";
-const TextEditor = ({ handleDescriptionChange = null }) => {
+const TextEditor = ({ handleDescriptionChange = null, clear = false }) => {
   const [editorState, setEditorState] = useState(() =>
     EditorState.createEmpty()
   );
   const [convertedContent, setConvertedContent] = useState(null);
+
+  useEffect(() => {
+    clear && setEditorState(null);
+  }, [clear]);
+
   const handleEditorChange = (state) => {
     setEditorState(state);
-    convertContentToHTML();
-    handleDescriptionChange(convertedContent);
+    let currentContentAsHTML = convertToHTML(editorState.getCurrentContent());
+    setConvertedContent(currentContentAsHTML);
+    handleDescriptionChange(currentContentAsHTML);
   };
+
   const convertContentToHTML = () => {
     let currentContentAsHTML = convertToHTML(editorState.getCurrentContent());
     setConvertedContent(currentContentAsHTML);

@@ -1,11 +1,10 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, current } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
 import AxiosInstance from "../apis/axios";
-import { addToPostApi } from "../apis/posts";
 // end of imports
 
 const name = "post";
-const reducers = { name: () => ({}) };
+
 const initialState = {
   create: {
     loading: false,
@@ -20,6 +19,42 @@ const initialState = {
       loading: false,
       data: [],
     },
+  },
+};
+
+const reducers = {
+  addCommentStatic: (state, action) => ({
+    ...state,
+    get: {
+      ...state.get,
+      singlePost: {
+        ...state.get.singlePost,
+        data: {
+          ...state.get.singlePost?.data,
+          comments: [...state.get.singlePost?.data?.comments, action.payload],
+        },
+      },
+    },
+  }),
+  addReplyStatic: (state, action) => {
+    const comments = state.get.singlePost?.data?.comments;
+
+    const index = comments.findIndex(
+      (singleComment) => singleComment?._id === action.payload?._id
+    );
+    console.log("index -->", index, current(state));
+    const previousElement = comments?.slice(0, index);
+    const afterElements = comments?.slice(index + 1);
+    const currentElement = action.payload;
+    console.log(
+      "final data is -->",
+      ...previousElement,
+      ...afterElements,
+      currentElement
+    );
+    const finalData = [...previousElement, currentElement, ...afterElements];
+    console.log("down is -->", finalData);
+    state.get.singlePost.data.comments = finalData;
   },
 };
 // asynchronous actions right here
@@ -140,7 +175,13 @@ export const postSlice = createSlice({
 });
 
 // exporting actions for dispatch
-export const { addPost, getSinglePost, getAllPosts } = {
+export const {
+  addPost,
+  getSinglePost,
+  getAllPosts,
+  addCommentStatic,
+  addReplyStatic,
+} = {
   ...postSlice.actions,
   ...extraActions,
 };

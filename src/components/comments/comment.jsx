@@ -2,6 +2,7 @@ import {
   Avatar,
   Box,
   Button,
+  CircularProgress,
   Grid,
   IconButton,
   Menu,
@@ -11,9 +12,15 @@ import {
   Typography,
 } from "@material-ui/core";
 import moment from "moment";
+import { useEffect } from "react";
 import { useState } from "react";
 import { FaReply, FaThumbsUp } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
+import { addReply } from "../../redux/commentSlices";
+import { addReplyStatic } from "../../redux/postSlices";
 import { PostOptionsIcon } from "../MiddleColumn/FeedPost/styles";
+import io from "socket.io-client";
 
 const Comment = ({
   avatar = "",
@@ -21,9 +28,33 @@ const Comment = ({
   name = "",
   comment = "",
   actualComment = {},
+  commentId = "",
+  postId = "",
 }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [reply, setReply] = useState(false);
+  const [replyData, setReplyData] = useState("");
+  // const [commentId, setCommentId] = useState("");
+
+  const dispatch = useDispatch(false);
+  let socket;
+
+  const { isReplying, isReplied } = useSelector((state) => state.comment);
+  const { user } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    socket = io("http://localhost:5000");
+  });
+
+  // if replied, send replied to the socket
+  useEffect(() => {
+    if (isReplied) {
+      setReplyData("");
+      socket?.emit("addReply", isReplied, postId);
+      // dispatch(addReplyStatic({ ...isReplied }));
+    }
+  }, [isReplied]);
+
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -34,6 +65,25 @@ const Comment = ({
 
   const toggleReply = () => {
     setReply((prev) => !prev);
+  };
+
+  const handleReplyChange = (e) => {
+    setReplyData(e.target.value);
+  };
+
+  const handleReplySubmit = (commentId) => {
+    // setCommentId(commentId);
+    if (!replyData) {
+      toast.info("replied nothing");
+      return setReply(false);
+    }
+
+    dispatch(
+      addReply({
+        comment: commentId,
+        description: replyData,
+      })
+    );
   };
 
   return (
@@ -87,7 +137,10 @@ const Comment = ({
             </Menu>
           </Grid>
           <br />
-          <p style={{ textAlign: "left", marginTop: "" }}>{comment}</p>
+          <p
+            style={{ textAlign: "left", marginTop: "" }}
+            dangerouslySetInnerHTML={{ __html: comment }}
+          ></p>
           <br />
           <small
             style={{
@@ -118,8 +171,24 @@ const Comment = ({
                   margin: "20px 0 20px 10px",
                 }}
               >
-                <TextField variant="outlined" style={{ width: "500px" }} />
-                <Button style={{ marginLeft: "20px" }} variant="contained">
+                <TextField
+                  onChange={handleReplyChange}
+                  value={replyData}
+                  variant="outlined"
+                  style={{ width: "500px" }}
+                />
+                <Button
+                  style={{ marginLeft: "20px", textTransform: "none" }}
+                  variant="contained"
+                  onClick={() => handleReplySubmit(actualComment?._id)}
+                >
+                  {/* {!isReplying && "Reply"} */}
+                  {/* {isReplying  (
+                    <CircularProgress
+                      size={"20px"}
+                      style={{ margin: "5px 10px" }}
+                    />
+                  )} */}
                   Reply
                 </Button>
               </Box>
