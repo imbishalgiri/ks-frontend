@@ -1477,7 +1477,7 @@
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
-"@material-ui/core@^4.11.2":
+"@material-ui/core@^4.11.0", "@material-ui/core@^4.11.2":
   version "4.12.4"
   resolved "https://registry.yarnpkg.com/@material-ui/core/-/core-4.12.4.tgz#4ac17488e8fcaf55eb6a7f5efb2a131e10138a73"
   integrity sha512-tr7xekNlM9LjA6pagJmL8QCgZXaubWUwkJnoYcMKd4gw/t4XiyvnTkjdGrUVicyB2BsdaAv1tvow45bPM4sSwQ==
@@ -7972,6 +7972,14 @@ ms@2.1.3, ms@^2.1.1:
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.3.tgz#574c8138ce1d2b5861f0b44579dbadd60c6615b2"
   integrity sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==
 
+mui-confirm-modal@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/mui-confirm-modal/-/mui-confirm-modal-1.0.4.tgz#e87bd4b7ea12014c4aa8012c7e666c095839fb68"
+  integrity sha512-d4EltpE8YoltMrsu6Yfo7sMU8SAHalTmtOcF2ZDUPSYehOe4u1ooP2TiStcJdfwcMD7AsLv4zMt09cjDTnmZcw==
+  dependencies:
+    "@material-ui/core" "^4.11.0"
+    react-confirm "^0.1.20"
+
 multicast-dns-service-types@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/multicast-dns-service-types/-/multicast-dns-service-types-1.1.0.tgz#899f11d9686e5e05cb91b35d5f0e63b773cfc901"
@@ -9639,6 +9647,11 @@ react-app-polyfill@^2.0.0:
     raf "^3.4.1"
     regenerator-runtime "^0.13.7"
     whatwg-fetch "^3.4.1"
+
+react-confirm@^0.1.20:
+  version "0.1.27"
+  resolved "https://registry.yarnpkg.com/react-confirm/-/react-confirm-0.1.27.tgz#d8da5d62fa4d52fbe2ffe9d91cf5ba4bfc3dc8b4"
+  integrity sha512-CWrPjCXqYXIRnnmDbGezN+4Umz+yZnaxFQWqjhz8fJQLTgNC47stON8NK5NjXioXfcfVawCrLj757ztBBNBZFQ==
 
 react-dev-utils@^11.0.3:
   version "11.0.4"

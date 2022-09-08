@@ -9,6 +9,11 @@ const initialState = {
   user: {},
   isLoggingIn: false,
   isLoggedIn: false,
+  requestedUser: {
+    userfetching: false,
+    userFetched: false,
+    user: {},
+  },
 };
 
 // combination of normal actions and reducers
@@ -34,13 +39,23 @@ const extraActions = {
   login: createAsyncThunk(`${name}/login`, async (data) => {
     return await AxiosInstance.post("/auth/login", data);
   }),
+  // 2) get single user
+  getUser: createAsyncThunk(`${name}/getUser`, async (id) => {
+    return await AxiosInstance.get(`/users/${id}`);
+  }),
 };
 
 // extracting states from actions
 const { pending, fulfilled, rejected } = extraActions.login;
+const {
+  pending: gettingUser,
+  fulfilled: gotUser,
+  rejected: failedUser,
+} = extraActions.getUser;
 
 // hooking up extra reducers
 const extraReducers = {
+  // auth reducer here -----------------------------------------------
   [pending]: (state) => ({ ...state, isLoggingIn: true }),
   [fulfilled]: (state, action) => {
     toast.success("Login is successful");
@@ -54,11 +69,47 @@ const extraReducers = {
       user: decode(token)?.user,
     };
   },
-  [rejected]: (state, action) => {
-    console.log(action.payload);
+
+  [rejected]: (state) => {
     toast.error("Invalid Credentials");
     return { ...state, isLoggingIn: false };
   },
+  [gettingUser]: (state) => {
+    return {
+      ...state,
+      requestedUser: {
+        ...state.requestedUser,
+        userfetching: true,
+        userFetched: false,
+      },
+    };
+  },
+
+  // single user reducer here---------------------------------------
+  [gotUser]: (state, action) => {
+    console.log("ap -->", action.payload?.data);
+    return {
+      ...state,
+      requestedUser: {
+        ...state.requestedUser,
+        userfetching: false,
+        userFetched: true,
+        user: action?.payload?.data?.user,
+      },
+    };
+  },
+  [failedUser]: (state) => {
+    toast.error("failed getting user");
+    return {
+      ...state,
+      requestedUser: {
+        ...state.requestedUser,
+        userFetching: false,
+        userFetched: false,
+      },
+    };
+  },
+  // -----------------------------------------
 };
 
 export const postSlice = createSlice({
@@ -69,7 +120,7 @@ export const postSlice = createSlice({
 });
 
 // exporting actions for dispatch
-export const { login, addUser, cleanAuth } = {
+export const { login, addUser, cleanAuth, getUser } = {
   ...postSlice.actions,
   ...extraActions,
 };

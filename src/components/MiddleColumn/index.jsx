@@ -58,6 +58,8 @@ const MiddleColumn = ({ isLoading, postData = [] }) => {
                     key={data?._id}
                     post={data?._id}
                     time={moment(data?.createdAt)?.fromNow()}
+                    userId={data?.user?._id}
+                    postTitle={data?.title}
                   />
                 );
               })}

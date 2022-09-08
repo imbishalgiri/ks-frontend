@@ -6,6 +6,7 @@ import {
   MenuItem,
   TextField,
   Tooltip,
+  Typography,
 } from "@material-ui/core";
 
 import kFormatter from "../../../utils/kFormatter";
@@ -30,11 +31,17 @@ import {
   DisLikedIcon,
 } from "./styles";
 
-import { FaThumbsDown, FaThumbsUp } from "react-icons/fa";
+import { FaThumbsDown, FaThumbsUp, FaTrash } from "react-icons/fa";
 import AddComment from "../../Comment/addComment";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
+import AxiosInstance from "../../../apis/axios";
+import { toast } from "react-toastify";
+import { SaveIcon } from "../../LeftColumn/ProfilePanel/styles";
+import useUser from "../../../hooks/checkUser";
+import { confirm } from "mui-confirm-modal";
+import { removePostStatic } from "../../../redux/postSlices";
 
 const FeedPost = ({
   user,
@@ -49,12 +56,18 @@ const FeedPost = ({
   post = "",
   isLoading,
   single = false,
+  userId = "",
+  postTitle,
 }) => {
   const classes = useStyles();
   const [isDisliked, setIsDisliked] = useState(false);
   const [liked, setLiked] = useState(false);
+  const [totalLikes, setTotalLikes] = useState(0);
+  const [totalDislikes, setTotalDislikes] = useState(0);
   const [showComment, setShowComment] = useState(false);
   const navigate = useNavigate();
+  const [isThisUser] = useUser("");
+  const dispatch = useDispatch();
 
   const auth = useSelector((state) => state?.auth);
   const curUser = auth?.user;
@@ -62,15 +75,26 @@ const FeedPost = ({
   const likes = allLikes.filter((el) => el?.likeType === "u");
   const disLikes = allLikes.filter((el) => el?.likeType === "d");
 
+  useEffect(() => {
+    setTotalLikes(likes?.length);
+    setTotalDislikes(disLikes?.length);
+  }, [likes?.length, disLikes?.length]);
+
   // handeling likes in here
   useEffect(() => {
     if (Array.isArray(likes) && likes?.length) {
       const foundUser = likes.find((el) => el?.user?._id === curUser?._id);
-      if (foundUser) setLiked(true);
+      if (foundUser) {
+        setLiked(true);
+        setIsDisliked(false);
+      }
     }
     if (Array.isArray(disLikes) && disLikes?.length) {
       const foundUser = disLikes.find((el) => el?.user?._id === curUser?._id);
-      if (foundUser) setIsDisliked(true);
+      if (foundUser) {
+        setIsDisliked(true);
+        setLiked(false);
+      }
     }
   }, [likes?.length, disLikes?.length]);
   // handeling likes in here
@@ -105,11 +129,77 @@ const FeedPost = ({
     navigate(`dashboard/${post}`);
   };
 
+  const handleLike = () => {
+    if (isDisliked) {
+      setIsDisliked(false);
+    }
+
+    AxiosInstance.post("likes/create", { post, likeType: "u" })
+      .then((suc) => {
+        !liked && setTotalLikes(totalLikes + 1);
+        !liked && totalDislikes > 0 && setTotalDislikes(totalDislikes - 1);
+        setLiked(true);
+      })
+      .catch((error) => {
+        toast.error("Error Liking");
+      });
+  };
+
+  const handleDislike = () => {
+    if (liked) {
+      setLiked(false);
+    }
+    AxiosInstance.post("likes/create", { post, likeType: "d" })
+      .then((suc) => {
+        !isDisliked && totalLikes > 0 && setTotalLikes(totalLikes - 1);
+        !isDisliked && setTotalDislikes(totalDislikes + 1);
+        setIsDisliked(true);
+      })
+      .catch((error) => {
+        toast.error("Error Liking");
+      });
+  };
+
+  const handleDelete = async () => {
+    if (
+      await confirm({
+        title: "Delete Post",
+        message: "Are you sure you wanna do this?",
+      })
+    ) {
+      const promise = new Promise((resolve, reject) =>
+        AxiosInstance.delete("posts/" + post)
+          .then((data) => {
+            handleClose();
+            resolve("done");
+            dispatch(removePostStatic(post));
+            navigate("/");
+          })
+          .catch((err) => {
+            handleClose();
+            reject("err");
+          })
+      );
+
+      toast.promise(promise, {
+        pending: "Deleting...",
+        success: "Deleted.",
+        error: "could not delete",
+      });
+    } else {
+      handleClose();
+    }
+  };
+
   return (
     <Panel>
       <Container>
         <Row className="heading">
-          <Avatar src={avatar} alt="Rocketseat" />
+          <Avatar
+            onClick={() => navigate("/profile/" + userId)}
+            src={avatar}
+            alt="Rocketseat"
+          />
           <Column>
             <h3>{user}</h3>
             <h4>{"Software Engineering student at ncit"}</h4>
@@ -140,9 +230,17 @@ const FeedPost = ({
               horizontal: "left",
             }}
           >
-            <MenuItem onClick={handleClose}>Profile</MenuItem>
-            <MenuItem onClick={handleClose}>My account</MenuItem>
-            <MenuItem onClick={handleClose}>Logout</MenuItem>
+            <MenuItem onClick={handleClose}>
+              {" "}
+              <SaveIcon style={{ marginRight: "10px" }} /> Pin
+            </MenuItem>
+            {isThisUser(userId) && (
+              <MenuItem onClick={handleDelete}>
+                <FaTrash style={{ color: "#7c8a96", marginRight: "10px" }} />{" "}
+                Delete
+              </MenuItem>
+            )}
+            {/* <MenuItem onClick={handleClose}>Logout</MenuItem> */}
           </Menu>
         </Row>
         <PostImage
@@ -174,7 +272,7 @@ const FeedPost = ({
           >
             <Box>
               <FaThumbsUp color={"#7185f6"} />
-              <span className="number">{likes?.length || 0}</span>
+              <span className="number">{totalLikes}</span>
             </Box>
           </Tooltip>
 
@@ -197,7 +295,7 @@ const FeedPost = ({
           >
             <Box style={{ marginLeft: "25px", marginRight: "10px" }}>
               <FaThumbsDown style={{ marginTop: "1px" }} color={"#7185f6"} />
-              <span className="number">{disLikes?.length || 0}</span>
+              <span className="number">{totalDislikes}</span>
             </Box>
           </Tooltip>
 
@@ -223,11 +321,24 @@ const FeedPost = ({
             arrow
             classes={{ tooltip: classes.tooltip }}
           >
-            <button type="button">
+            <button onClick={handleLike} type="button">
               {!liked && <LikeIcon />}
               {liked && <LikedIcon />}
             </button>
           </Tooltip>
+          {hideComment && (
+            <Typography
+              style={{
+                color: "#6a7076",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                paddingLeft: "20px",
+              }}
+            >
+              {postTitle}
+            </Typography>
+          )}
           <Tooltip
             title="React to the post"
             placement="bottom"
@@ -235,11 +346,24 @@ const FeedPost = ({
             arrow
             classes={{ tooltip: classes.tooltip }}
           >
-            <button onClick={() => setIsDisliked(!isDisliked)} type="button">
+            <button onClick={handleDislike} type="button">
               {!isDisliked && <DisLikeIcon />}
               {isDisliked && <DisLikedIcon />}
             </button>
           </Tooltip>
+          {!hideComment && (
+            <Typography
+              style={{
+                color: "#6a7076",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                paddingLeft: "20px",
+              }}
+            >
+              {postTitle}
+            </Typography>
+          )}
           {!hideComment && (
             <Tooltip
               title="Comment on the post"
@@ -253,7 +377,6 @@ const FeedPost = ({
                 type="button"
               >
                 <CommentIcon />
-                <span>Comment</span>
               </button>
             </Tooltip>
           )}
@@ -269,30 +392,10 @@ const FeedPost = ({
                 likes={singleComment?.likes}
                 replies={singleComment?.replies}
                 description={singleComment?.comment}
+                avatar={singleComment?.user?.avatar}
               />
             ))}
             <br />
-            <Box display={"flex"}>
-              <Avatar style={{ opacity: "0", cursor: "default" }} src="null" />
-              <TextField
-                label={"comment"}
-                variant="outlined"
-                placeholder="Add Comment Here"
-                style={{ minWidth: "360px" }}
-              />
-              <Button
-                variant="contained"
-                style={{
-                  alignSelf: "flex-start",
-                  background: "#3170ac",
-                  color: "#fff",
-                  textTransform: "none",
-                  marginLeft: "1rem",
-                }}
-              >
-                Comment
-              </Button>
-            </Box>
           </Row>
         )}
         <br />

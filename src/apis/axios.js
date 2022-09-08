@@ -2,9 +2,9 @@ import axios from "axios";
 
 const AxiosInstance = axios.create({
   // baseURL: "https://ks-api.vercel.app/api/v1",
-  // baseURL: "https://sleepy-cove-90575.herokuapp.com/api/v1",
-  baseURL: "http://localhost:5000/api/v1",
-  timeout: 10000,
+  baseURL: "https://knowledge-seekers.herokuapp.com/api/v1",
+  // baseURL: "http://localhost:5000/api/v1",
+  timeout: 90000,
 });
 
 AxiosInstance.interceptors.request.use(

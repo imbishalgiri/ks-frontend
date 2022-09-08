@@ -8,11 +8,16 @@ import {
 } from "@material-ui/core";
 import { useState } from "react";
 
-const AddComment = ({ image = "", description, likes = [], replies = [] }) => {
+const AddComment = ({ avatar = "", description, likes = [], replies = [] }) => {
   return (
     <Box style={{ marginTop: "1rem" }}>
       <Box style={{ display: "flex" }}>
-        <Avatar src="https://github.com/leoronne.png" />
+        <Avatar
+          src={
+            avatar ||
+            "https://placehold.jp/626c62/ffffff/150x150.png?text=KS%20USER"
+          }
+        />
         <Box
           style={{
             background: "#f6f5f5",

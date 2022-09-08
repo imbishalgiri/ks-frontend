@@ -45,6 +45,7 @@ import { addComment } from "../../redux/commentSlices";
 import { SocketContext } from "../../context/socket";
 import { useContext } from "react";
 import Appbar from "../../components/appbar";
+import moment from "moment";
 const SinglePost = () => {
   const { changeTheme, themeName } = useTheme();
   const dispatch = useDispatch();
@@ -162,6 +163,11 @@ const SinglePost = () => {
                   single={true}
                   allLikes={data?.likes}
                   allComments={data?.comments}
+                  key={data?._id}
+                  post={data?._id}
+                  userId={data?.user?._id}
+                  postTitle={data?.title}
+                  time={moment(data?.createdAt)?.fromNow()}
                 />
 
                 <br />

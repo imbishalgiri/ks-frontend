@@ -14,14 +14,21 @@ import {
 import moment from "moment";
 import { useEffect } from "react";
 import { useState } from "react";
-import { FaReply, FaThumbsUp } from "react-icons/fa";
+import { FaReply, FaThumbsUp, FaTrash } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { addReply } from "../../redux/commentSlices";
-import { addReplyStatic } from "../../redux/postSlices";
+import {
+  addReplyStatic,
+  removeCommentStatic,
+  removePostStatic,
+} from "../../redux/postSlices";
 import { PostOptionsIcon } from "../MiddleColumn/FeedPost/styles";
 import { SocketContext } from "../../context/socket";
 import { useContext } from "react";
+import AxiosInstance from "../../apis/axios";
+import useUser from "../../hooks/checkUser";
+import { confirm } from "mui-confirm-modal";
 
 const Comment = ({
   avatar = "",
@@ -35,6 +42,10 @@ const Comment = ({
   const [anchorEl, setAnchorEl] = useState(null);
   const [reply, setReply] = useState(false);
   const [replyData, setReplyData] = useState("");
+  const [liked, setLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
+  const [isThisUser] = useUser();
+
   // const [commentId, setCommentId] = useState("");
 
   const dispatch = useDispatch(false);
@@ -68,6 +79,22 @@ const Comment = ({
     setReplyData(e.target.value);
   };
 
+  const handleLike = () => {
+    AxiosInstance.post("comments/like", { comment: commentId, likeType: "u" })
+      .then((data) => {
+        if (liked) {
+          setLiked(false);
+          setLikeCount(likeCount - 1);
+        } else {
+          setLiked(true);
+          setLikeCount(likeCount + 1);
+        }
+      })
+      .catch((err) => {
+        toast.error("error");
+      });
+  };
+
   const handleReplySubmit = (commentId) => {
     // setCommentId(commentId);
     if (!replyData) {
@@ -81,6 +108,44 @@ const Comment = ({
         description: replyData,
       })
     );
+  };
+
+  useEffect(() => {
+    setLikeCount(actualComment?.likes?.length);
+    if (actualComment?.likes?.find((el) => el?.user?._id === user?._id)) {
+      setLiked(true);
+    }
+  }, [actualComment?.likes?.length]);
+
+  const handleCommentDelete = async (commentId) => {
+    if (
+      await confirm({
+        title: "Delete Post",
+        message: "Are you sure you wanna do this?",
+      })
+    ) {
+      const promise = new Promise((resolve, reject) =>
+        AxiosInstance.delete("comments/" + commentId)
+          .then((data) => {
+            handleClose();
+            resolve("done");
+            dispatch(removeCommentStatic(commentId));
+            navigate("/");
+          })
+          .catch((err) => {
+            handleClose();
+            reject("err");
+          })
+      );
+
+      toast.promise(promise, {
+        pending: "Deleting...",
+        success: "Deleted.",
+        error: "could not delete",
+      });
+    } else {
+      handleClose();
+    }
   };
 
   return (
@@ -107,31 +172,39 @@ const Comment = ({
               <strong> {name}</strong>
             </Typography>
             <IconButton
-              style={{ marginLeft: "auto" }}
+              style={{
+                marginLeft: "auto",
+                opacity: `${isThisUser(actualComment?.user?._id) ? 1 : 0}`,
+              }}
               className="post-options"
               onClick={handleClick}
             >
               <PostOptionsIcon />
             </IconButton>
-            <Menu
-              id="demo-positioned-menu"
-              aria-labelledby="demo-positioned-button"
-              anchorEl={anchorEl}
-              open={open}
-              onClose={handleClose}
-              anchorOrigin={{
-                vertical: "top",
-                horizontal: "left",
-              }}
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "left",
-              }}
-            >
-              <MenuItem onClick={handleClose}>Profile</MenuItem>
-              <MenuItem onClick={handleClose}>My account</MenuItem>
-              <MenuItem onClick={handleClose}>Logout</MenuItem>
-            </Menu>
+            {isThisUser(actualComment?.user?._id) && (
+              <Menu
+                id="demo-positioned-menu"
+                aria-labelledby="demo-positioned-button"
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "left",
+                }}
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "left",
+                }}
+              >
+                <MenuItem
+                  onClick={() => handleCommentDelete(actualComment?._id)}
+                >
+                  <FaTrash style={{ color: "#7c8a96", marginRight: "10px" }} />{" "}
+                  Delete
+                </MenuItem>
+              </Menu>
+            )}
           </Grid>
           <br />
           <p
@@ -151,8 +224,14 @@ const Comment = ({
           <br />
           <br />
 
-          <FaThumbsUp style={{ cursor: "pointer", color: "#474545" }} />
-          {" " + actualComment?.likes?.length}
+          <FaThumbsUp
+            onClick={handleLike}
+            style={{
+              cursor: "pointer",
+              color: `${liked ? "#4250af" : "#474545"}`,
+            }}
+          />
+          {" " + likeCount}
           <FaReply
             style={{ marginLeft: "20px", cursor: "pointer" }}
             onClick={toggleReply}

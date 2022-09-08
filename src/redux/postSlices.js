@@ -38,23 +38,28 @@ const reducers = {
   }),
   addReplyStatic: (state, action) => {
     const comments = state.get.singlePost?.data?.comments;
-
     const index = comments.findIndex(
       (singleComment) => singleComment?._id === action.payload?._id
     );
-    console.log("index -->", index, current(state));
     const previousElement = comments?.slice(0, index);
     const afterElements = comments?.slice(index + 1);
     const currentElement = action.payload;
-    console.log(
-      "final data is -->",
-      ...previousElement,
-      ...afterElements,
-      currentElement
-    );
     const finalData = [...previousElement, currentElement, ...afterElements];
-    console.log("down is -->", finalData);
     state.get.singlePost.data.comments = finalData;
+  },
+
+  removePostStatic: (state, action) => {
+    const filteredPost = state?.get?.allPosts?.data?.filter(
+      (singleData) => singleData?._id !== action.payload
+    );
+    state.get.allPosts.data = filteredPost;
+  },
+
+  removeCommentStatic: (state, action) => {
+    const comments = state?.get?.singlePost?.data?.comments?.filter(
+      (el) => el?._id !== action.payload
+    );
+    state.get.singlePost.data.comments = comments;
   },
 };
 // asynchronous actions right here
@@ -181,6 +186,8 @@ export const {
   getAllPosts,
   addCommentStatic,
   addReplyStatic,
+  removePostStatic,
+  removeCommentStatic,
 } = {
   ...postSlice.actions,
   ...extraActions,

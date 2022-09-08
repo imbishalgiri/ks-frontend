@@ -2,6 +2,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 import React, { useMemo } from "react";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 import kFormatter from "../../../utils/kFormatter";
 import openPage from "../../../utils/openPage";
@@ -11,10 +12,7 @@ import Panel from "../../Panel";
 import { Container, SaveIcon } from "./styles";
 
 const ProfilePanel = () => {
-  const viewed = useMemo(
-    () => kFormatter(Math.floor(Math.random() * (10000 - 1)) + 1),
-    []
-  );
+  const navigate = useNavigate();
   const post = useMemo(
     () => kFormatter(Math.floor(Math.random() * (10000 - 1)) + 1),
     []
@@ -36,7 +34,7 @@ const ProfilePanel = () => {
               }`}
               alt="Avatar"
               className="profile-picture"
-              onClick={() => openPage("in/leoronne")}
+              onClick={() => navigate(`/profile/${user?._id}`)}
             />
             <h1>{user?.firstName + " " + user?.lastName}</h1>
             <h2>Be.Software 8th semester</h2>
