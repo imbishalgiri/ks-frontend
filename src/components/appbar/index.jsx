@@ -12,6 +12,7 @@ import {
   FaBrain,
   FaHamburger,
   FaSignOutAlt,
+  FaUser,
 } from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -61,6 +62,15 @@ const Appbar = () => {
         <Typography variant="h6" className={classes.title}>
           Knowledge Seekers
         </Typography>
+
+        <Button
+          onClick={() => navigate("/admin")}
+          style={{ marginRight: "50px", color: "#fff" }}
+          startIcon={<FaUser />}
+        >
+          Go to admin
+        </Button>
+
         <Button
           style={{
             textTransform: "none",

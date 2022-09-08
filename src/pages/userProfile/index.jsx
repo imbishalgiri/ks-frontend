@@ -39,6 +39,7 @@ const UserProfile = () => {
   const handleUpload = () => {
     const formData = new FormData();
     formData.append("image", image);
+    formData.append("_id", id);
     setIsUploading(true);
     AxiosInstance.put("/users/update", formData)
       .then((data) => {

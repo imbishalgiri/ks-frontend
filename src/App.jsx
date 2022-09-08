@@ -22,6 +22,8 @@ import { useDispatch } from "react-redux";
 import { SocketContext, socket } from "./context/socket";
 import Protected from "./components/protected";
 import UserProfile from "./pages/userProfile";
+import AdminArea from "./pages/adminArea";
+import Initial from "./pages/initial";
 
 const App = () => {
   const { themeName } = useTheme();
@@ -86,6 +88,17 @@ const App = () => {
               </Protected>
             }
           />
+          {/* --------------------- */}
+          <Route
+            path="/admin"
+            element={
+              <Protected>
+                <AdminArea />
+              </Protected>
+            }
+          />
+          {/* --------------------- */}
+          <Route path="/initial" element={<Initial />} />
           {/* --------------------- */}
         </Routes>
       </SocketContext.Provider>

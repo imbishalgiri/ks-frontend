@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 import { useTheme } from "../hooks";
 
@@ -22,8 +22,11 @@ import { FaHamburger } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { cleanAuth } from "../redux/authSlices";
-import { getAllPosts } from "../redux/postSlices";
+import { addPostStatic, getAllPosts } from "../redux/postSlices";
 import Appbar from "../components/appbar";
+import { useRef } from "react";
+import AxiosInstance from "../apis/axios";
+import { toast } from "react-toastify";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -39,28 +42,52 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Layout = () => {
-  const { changeTheme, themeName } = useTheme();
-  const [isLoading, setLoading] = useState(true);
-  const classes = useStyles();
+  const [fetching, setFetching] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const loader = useRef();
   const { data: postData, loading: postLoading } = useSelector(
     (state) => state.post.get.allPosts
   );
+  let page = 1;
+
+  const handleMoreLoad = (page) => {
+    setFetching(true);
+    AxiosInstance.get("/posts", { params: { page: page, limit: 3 } })
+      .then((data) => {
+        console.log("new data", data?.data);
+        dispatch(addPostStatic(data?.data?.data));
+        setFetching(false);
+      })
+      .catch((err) => {
+        toast.error("could not load more data");
+        setFetching(false);
+      });
+  };
 
   useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 1500);
-
-    dispatch(getAllPosts());
+    dispatch(getAllPosts({ page: 0, limit: 3 }));
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem("ks-user-token");
-    dispatch(cleanAuth());
-    navigate("/login");
-  };
+  const handleObserver = useCallback(
+    (entries) => {
+      const target = entries[0];
+      if (target.isIntersecting) {
+        handleMoreLoad(page++);
+      }
+    },
+    [postLoading]
+  );
+
+  useEffect(() => {
+    // const option = {
+    //   root: null,
+    //   // rootMargin: "20px",
+    //   threshold: 0,
+    // };
+    const observer = new IntersectionObserver(handleObserver);
+    if (loader.current) observer.observe(loader.current);
+  }, [handleObserver]);
 
   return (
     <Container>
@@ -90,7 +117,12 @@ const Layout = () => {
 
       <main style={{ marginTop: "100px" }}>
         <LeftColumn isLoading={false} />
-        <MiddleColumn isLoading={postLoading} postData={postData} />
+        <MiddleColumn
+          isLoading={postLoading}
+          postData={postData}
+          fetching={fetching}
+          ref={loader}
+        />
         <RightColumn isLoading={false} />
       </main>
     </Container>

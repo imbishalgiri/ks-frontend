@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { login } from "../../redux/authSlices";
 import "./styles.css";
 
@@ -21,10 +22,12 @@ const Login = () => {
   const token = localStorage.getItem("ks-user-token");
 
   useEffect(() => {
-    if (token && isLoggedIn) navigate("/");
-  }, [token, isLoggedIn]);
+    if (token) navigate("/");
+  }, [token]);
+  useEffect(() => {
+    isLoggedIn && toast.success("succesfully logged in");
+  }, [isLoggedIn]);
 
-  console.log("error ->", errors);
   const onSubmit = (data) => {
     dispatch(login(data));
   };

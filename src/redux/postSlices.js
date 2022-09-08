@@ -54,6 +54,9 @@ const reducers = {
     );
     state.get.allPosts.data = filteredPost;
   },
+  addPostStatic: (state, action) => {
+    state.get.allPosts.data.push(...action.payload);
+  },
 
   removeCommentStatic: (state, action) => {
     const comments = state?.get?.singlePost?.data?.comments?.filter(
@@ -74,7 +77,7 @@ const extraActions = {
   }),
   // 3) get all posts
   getAllPosts: createAsyncThunk(`${name}/getAllPosts`, async (data) => {
-    return await AxiosInstance.get("/posts");
+    return await AxiosInstance.get("/posts", { params: data });
   }),
 };
 
@@ -188,6 +191,7 @@ export const {
   addReplyStatic,
   removePostStatic,
   removeCommentStatic,
+  addPostStatic,
 } = {
   ...postSlice.actions,
   ...extraActions,

@@ -58,7 +58,6 @@ const extraReducers = {
   // auth reducer here -----------------------------------------------
   [pending]: (state) => ({ ...state, isLoggingIn: true }),
   [fulfilled]: (state, action) => {
-    toast.success("Login is successful");
     const token = action.payload?.data?.token?.split(" ")[1];
     localStorage.setItem("ks-user-token", token);
 
