@@ -57,6 +57,9 @@ const reducers = {
   addPostStatic: (state, action) => {
     state.get.allPosts.data.push(...action.payload);
   },
+  addPostStaticTop: (state, action) => {
+    state.get.allPosts.data = [action.payload, ...state.get.allPosts.data];
+  },
 
   removeCommentStatic: (state, action) => {
     const comments = state?.get?.singlePost?.data?.comments?.filter(
@@ -98,11 +101,10 @@ const {
 // hooking up extra reducers
 const extraReducers = {
   [pending]: (state) => ({ ...state, create: { loading: true } }),
-  [fulfilled]: (state) => {
-    toast.success("Successfully created post");
+  [fulfilled]: (state, action) => {
     return {
       ...state,
-      create: { loading: false, created: true },
+      create: { loading: false, created: action.payload?.data?.post },
     };
   },
   [rejected]: (state, action) => {
@@ -192,6 +194,7 @@ export const {
   removePostStatic,
   removeCommentStatic,
   addPostStatic,
+  addPostStaticTop,
 } = {
   ...postSlice.actions,
   ...extraActions,

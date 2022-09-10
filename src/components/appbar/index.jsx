@@ -2,15 +2,19 @@ import {
   AppBar,
   Button,
   IconButton,
+  InputAdornment,
   makeStyles,
+  TextField,
   Toolbar,
   Typography,
 } from "@material-ui/core";
+import { useCallback, useState } from "react";
 import {
   FaBookOpen,
   FaBookReader,
   FaBrain,
   FaHamburger,
+  FaSearch,
   FaSignOutAlt,
   FaUser,
 } from "react-icons/fa";
@@ -29,18 +33,37 @@ const useStyles = makeStyles((theme) => ({
   title: {
     flexGrow: 1,
   },
+  input: {
+    color: "#fff",
+  },
 }));
 
 const Appbar = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const classes = useStyles();
+  const [search, setSearch] = useState(false);
   const { user } = useSelector((state) => state.auth);
   const handleLogout = () => {
     localStorage.removeItem("ks-user-token");
     dispatch(cleanAuth());
     navigate("/login");
   };
+
+  const debounce = (func, timeout = 1000) => {
+    let timer;
+    return (...args) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        func.apply(this, args);
+      }, timeout);
+    };
+  };
+  const handleChange = (search) => {
+    setSearch(search);
+  };
+  const optimizedFn = useCallback(debounce(handleChange), []);
+  console.log("search", search);
   return (
     <AppBar
       style={{
@@ -62,7 +85,21 @@ const Appbar = () => {
         <Typography variant="h6" className={classes.title}>
           Knowledge Seekers
         </Typography>
-
+        <div style={{ marginRight: "40vw", display: "flex" }}>
+          <TextField
+            style={{ border: "1px solid #fff", marginLeft: "20px" }}
+            variant="outlined"
+            onChange={(e) => optimizedFn(e.target.value)}
+            InputProps={{
+              className: classes.input,
+              startAdornment: (
+                <InputAdornment position="start">
+                  <FaSearch />
+                </InputAdornment>
+              ),
+            }}
+          />
+        </div>
         {user.role === "admin" ? (
           <Button
             onClick={() => navigate("/admin")}

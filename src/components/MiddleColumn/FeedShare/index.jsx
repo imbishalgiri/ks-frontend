@@ -31,7 +31,7 @@ import UploadComponent from "../../common/dnd";
 import { FileUploader } from "react-drag-drop-files";
 import { useDispatch, useSelector } from "react-redux";
 
-import { addPost } from "../../../redux/postSlices";
+import { addPost, addPostStaticTop } from "../../../redux/postSlices";
 import { useEffect } from "react";
 
 const FeedShare = () => {
@@ -79,10 +79,12 @@ const FeedShare = () => {
   };
 
   useEffect(() => {
-    created && handleClose();
+    if (created) {
+      handleClose();
+      dispatch(addPostStaticTop(created));
+    }
   }, [created]);
 
-  console.log("description", description);
   const handleSubmit = () => {
     const formData = new FormData();
     formData.append("title", title);
