@@ -53,7 +53,7 @@ const FeedShare = () => {
 
   const isValid = title && `${category}` && description?.length > 7;
 
-  const fileTypes = ["JPEG", "PNG", "GIF"];
+  const fileTypes = ["JPEG", "PNG", "GIF", "JPG"];
   const handleFileChange = (file) => {
     setFile(file);
   };
