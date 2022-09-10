@@ -51,8 +51,8 @@ const Initial = () => {
 
   const handleSubmit = () => {
     if (password.length < 6) return;
-    if (selectedCat.length < 3) {
-      return toast.info("please select at least 3 categories");
+    if (selectedCat.length < 2) {
+      return toast.info("please select at least 2 categories");
     }
     setLoading(true);
     AxiosInstance.put("/users/update", {
@@ -162,6 +162,8 @@ const Initial = () => {
                 "Programming",
                 "Technology",
                 "Literature",
+                "Photography",
+                "Others",
               ].map((el) => {
                 return (
                   <div style={{ margin: "30px 0" }}>

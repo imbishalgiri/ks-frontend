@@ -162,7 +162,10 @@ const Comment = ({
           <Grid container justifyContent="space-between" alignItems="center">
             <Avatar
               alt="Remy Sharp"
-              src={avatar || "https://www.fillmurray.com/640/360"}
+              src={
+                avatar ||
+                "https://placehold.jp/626c62/ffffff/150x150.png?text=KS%20USER"
+              }
             />
             <Typography
               component={"span"}

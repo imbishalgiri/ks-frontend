@@ -51,7 +51,7 @@ const FeedShare = () => {
 
   const dispatch = useDispatch();
 
-  const isValid = title && `${category}` && description.length > 7;
+  const isValid = title && `${category}` && description?.length > 7;
 
   const fileTypes = ["JPEG", "PNG", "GIF"];
   const handleFileChange = (file) => {
@@ -181,6 +181,7 @@ const FeedShare = () => {
                 <MenuItem value={30}>Programming</MenuItem>
                 <MenuItem value={30}>Technology</MenuItem>
                 <MenuItem value={30}>Literature</MenuItem>
+                <MenuItem value={30}>Photography</MenuItem>
                 <MenuItem value={30}>Others</MenuItem>
               </Select>
             </FormControl>
