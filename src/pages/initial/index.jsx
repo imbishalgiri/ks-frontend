@@ -141,7 +141,7 @@ const Initial = () => {
             <div>
               <Typography variant="h6">
                 select your intrest{" "}
-                {selectedCat.length < 3 ? (
+                {selectedCat.length < 2 ? (
                   <small
                     style={{
                       marginRight: "5px",
@@ -149,14 +149,20 @@ const Initial = () => {
                       fontSize: "12px",
                     }}
                   >
-                    3 at least*
+                    2 at least*
                   </small>
                 ) : (
                   ""
                 )}
               </Typography>
 
-              {["science", "fiction", "legendary"].map((el) => {
+              {[
+                "Science",
+                "Design",
+                "Programming",
+                "Technology",
+                "Literature",
+              ].map((el) => {
                 return (
                   <div style={{ margin: "30px 0" }}>
                     <span
