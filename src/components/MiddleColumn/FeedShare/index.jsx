@@ -51,7 +51,7 @@ const FeedShare = () => {
 
   const dispatch = useDispatch();
 
-  const isValid = title && file?.[0]?.name && `${category}`;
+  const isValid = title && `${category}` && description.length > 7;
 
   const fileTypes = ["JPEG", "PNG", "GIF"];
   const handleFileChange = (file) => {
@@ -176,9 +176,12 @@ const FeedShare = () => {
                 label="Categories"
                 onChange={handleCategoriesChange}
               >
-                <MenuItem value={10}>Ten</MenuItem>
-                <MenuItem value={20}>Twenty</MenuItem>
-                <MenuItem value={30}>Thirty</MenuItem>
+                <MenuItem value={10}>Science</MenuItem>
+                <MenuItem value={20}>Design</MenuItem>
+                <MenuItem value={30}>Programming</MenuItem>
+                <MenuItem value={30}>Technology</MenuItem>
+                <MenuItem value={30}>Literature</MenuItem>
+                <MenuItem value={30}>Others</MenuItem>
               </Select>
             </FormControl>
           </Grid>

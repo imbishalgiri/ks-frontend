@@ -234,7 +234,7 @@ const AdminArea = () => {
           </Button>
         </div>
 
-        <div style={{ width: "1400px", marginTop: "100px" }} className="table">
+        <div style={{ width: "90vw", marginTop: "100px" }} className="table">
           <TableContainer component={Paper}>
             <Table className={classes.table} aria-label="customized table">
               <TableHead>
