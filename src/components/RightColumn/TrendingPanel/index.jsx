@@ -79,7 +79,9 @@ const TrendingPanel = () => {
                       arrow
                       classes={{ tooltip: classes.tooltip }}
                     >
-                      <span className="head">{topic?.description}</span>
+                      <span className="head">
+                        {topic?.description?.slice(0, 25)}...
+                      </span>
                     </Tooltip>
                     <span className="subtext">
                       {moment(topic?.createdAt)?.fromNow()}

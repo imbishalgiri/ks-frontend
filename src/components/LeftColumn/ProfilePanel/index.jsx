@@ -37,13 +37,15 @@ const ProfilePanel = () => {
               onClick={() => navigate(`/profile/${user?._id}`)}
             />
             <h1>{user?.firstName + " " + user?.lastName}</h1>
-            <h2>Be.Software 8th semester</h2>
+            <h2>
+              {user.faculty} ({user.semester}) sem
+            </h2>
 
             <div className="separator" />
 
             <div className="key-value">
-              <span className="key">Views of your post</span>
-              <span className="value">{post}</span>
+              <span className="key">This is knowledge seekers</span>
+              <span className="value">{null}</span>
             </div>
             <div className="separator" />
             <div className="saved-items">
