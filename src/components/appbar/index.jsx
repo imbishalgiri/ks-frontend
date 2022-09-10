@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Appbar = () => {
+const Appbar = ({ setSearchValue = null }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const classes = useStyles();
@@ -55,12 +55,13 @@ const Appbar = () => {
     return (...args) => {
       clearTimeout(timer);
       timer = setTimeout(() => {
-        func.apply(this, args);
+        func(args);
       }, timeout);
     };
   };
   const handleChange = (search) => {
     setSearch(search);
+    setSearchValue(search);
   };
   const optimizedFn = useCallback(debounce(handleChange), []);
   console.log("search", search);
@@ -85,21 +86,27 @@ const Appbar = () => {
         <Typography variant="h6" className={classes.title}>
           Knowledge Seekers
         </Typography>
-        <div style={{ marginRight: "40vw", display: "flex" }}>
-          <TextField
-            style={{ border: "1px solid #fff", marginLeft: "20px" }}
-            variant="outlined"
-            onChange={(e) => optimizedFn(e.target.value)}
-            InputProps={{
-              className: classes.input,
-              startAdornment: (
-                <InputAdornment position="start">
-                  <FaSearch />
-                </InputAdornment>
-              ),
-            }}
-          />
-        </div>
+        {setSearchValue && (
+          <div style={{ marginRight: "30vw", display: "flex" }}>
+            <TextField
+              style={{
+                border: "1px solid #fff",
+                marginLeft: "20px",
+                width: "200px",
+                height: "32px",
+              }}
+              onChange={(e) => optimizedFn(e.target.value)}
+              InputProps={{
+                className: classes.input,
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <FaSearch style={{ margin: "0 5px" }} />
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </div>
+        )}
         {user.role === "admin" ? (
           <Button
             onClick={() => navigate("/admin")}

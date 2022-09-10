@@ -46,6 +46,7 @@ const Layout = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const loader = useRef();
+  const [search, setSearch] = useState("");
   const { user, meRefresh } = useSelector((state) => state?.auth);
   const { data: postData, loading: postLoading } = useSelector(
     (state) => state.post.get.allPosts
@@ -56,7 +57,6 @@ const Layout = () => {
     setFetching(true);
     AxiosInstance.get("/posts", { params: { page: page, limit: 3 } })
       .then((data) => {
-        console.log("new data", data?.data);
         dispatch(addPostStatic(data?.data?.data));
         setFetching(false);
       })
@@ -71,9 +71,16 @@ const Layout = () => {
   }, [user?._id, meRefresh]);
 
   useEffect(() => {
-    dispatch(getAllPosts({ page: 0, limit: 3 }));
     dispatch(getNotice());
   }, []);
+
+  useEffect(() => {
+    dispatch(getAllPosts({ page: 0, limit: 3, title: search }));
+  }, [search]);
+
+  const handleSearch = (value) => {
+    setSearch(value);
+  };
 
   const handleObserver = useCallback(
     (entries) => {
@@ -86,11 +93,6 @@ const Layout = () => {
   );
 
   useEffect(() => {
-    // const option = {
-    //   root: null,
-    //   // rootMargin: "20px",
-    //   threshold: 0,
-    // };
     const observer = new IntersectionObserver(handleObserver);
     if (loader.current) observer.observe(loader.current);
   }, [handleObserver]);
@@ -118,7 +120,7 @@ const Layout = () => {
             </Button>
           </Toolbar>
         </AppBar> */}
-      <Appbar />
+      <Appbar setSearchValue={handleSearch} />
       {/* </div> */}
 
       <main style={{ marginTop: "100px" }}>

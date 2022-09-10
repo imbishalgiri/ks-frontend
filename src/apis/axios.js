@@ -1,8 +1,8 @@
 import axios from "axios";
 
 const AxiosInstance = axios.create({
-  // baseURL: "https://knowledge-seekers.herokuapp.com/api/v1",
-  baseURL: "http://localhost:5000/api/v1",
+  baseURL: "https://knowledge-seekers.herokuapp.com/api/v1",
+  // baseURL: "http://localhost:5000/api/v1",
   timeout: 90000,
 });
 
