@@ -176,13 +176,13 @@ const FeedShare = () => {
                 label="Categories"
                 onChange={handleCategoriesChange}
               >
-                <MenuItem value={10}>Science</MenuItem>
-                <MenuItem value={20}>Design</MenuItem>
-                <MenuItem value={30}>Programming</MenuItem>
-                <MenuItem value={30}>Technology</MenuItem>
-                <MenuItem value={30}>Literature</MenuItem>
-                <MenuItem value={30}>Photography</MenuItem>
-                <MenuItem value={30}>Others</MenuItem>
+                <MenuItem value={"Science"}>Science</MenuItem>
+                <MenuItem value={"Design"}>Design</MenuItem>
+                <MenuItem value={"Programming"}>Programming</MenuItem>
+                <MenuItem value={"Technology"}>Technology</MenuItem>
+                <MenuItem value={"Literature"}>Literature</MenuItem>
+                <MenuItem value={"Photography"}>Photography</MenuItem>
+                <MenuItem value={"Others"}>Others</MenuItem>
               </Select>
             </FormControl>
           </Grid>
