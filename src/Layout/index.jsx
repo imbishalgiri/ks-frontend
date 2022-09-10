@@ -21,7 +21,7 @@ import IconButton from "@material-ui/core/IconButton";
 import { FaHamburger } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { cleanAuth } from "../redux/authSlices";
+import { getMe, getNotice } from "../redux/authSlices";
 import { addPostStatic, getAllPosts } from "../redux/postSlices";
 import Appbar from "../components/appbar";
 import { useRef } from "react";
@@ -46,6 +46,7 @@ const Layout = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const loader = useRef();
+  const { user, meRefresh } = useSelector((state) => state?.auth);
   const { data: postData, loading: postLoading } = useSelector(
     (state) => state.post.get.allPosts
   );
@@ -66,7 +67,12 @@ const Layout = () => {
   };
 
   useEffect(() => {
+    user?._id && dispatch(getMe(user?._id));
+  }, [user?._id, meRefresh]);
+
+  useEffect(() => {
     dispatch(getAllPosts({ page: 0, limit: 3 }));
+    dispatch(getNotice());
   }, []);
 
   const handleObserver = useCallback(

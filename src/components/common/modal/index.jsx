@@ -22,6 +22,7 @@ const CustomModal = ({
   onSave,
   disabled,
   isLoading = false,
+  showFooter = true,
 }) => {
   const classes = useStyles();
 
@@ -49,33 +50,35 @@ const CustomModal = ({
         </Box>
         <Box className={classes.modalBody}>{children}</Box>
 
-        <Box className={classes.modalFooter}>
-          <Box className={classes.modalFooterButtons}>
-            {!isLoading ? (
-              <Button
-                className={classes.modalFooterBtn}
-                variant={"contained"}
-                disabled={disabled}
-                onClick={onSave}
-              >
-                Save
-              </Button>
-            ) : (
-              <CircularProgress size={"2rem"} />
-            )}
+        {showFooter && (
+          <Box className={classes.modalFooter}>
+            <Box className={classes.modalFooterButtons}>
+              {!isLoading ? (
+                <Button
+                  className={classes.modalFooterBtn}
+                  variant={"contained"}
+                  disabled={disabled}
+                  onClick={onSave}
+                >
+                  Save
+                </Button>
+              ) : (
+                <CircularProgress size={"2rem"} />
+              )}
 
-            {!isLoading && (
-              <Button
-                className={classes.modalFooterCancel}
-                sx={{ background: "#fff", color: "#000" }}
-                variant={"contained"}
-                onClick={handleClose}
-              >
-                Cancel
-              </Button>
-            )}
+              {!isLoading && (
+                <Button
+                  className={classes.modalFooterCancel}
+                  sx={{ background: "#fff", color: "#000" }}
+                  variant={"contained"}
+                  onClick={handleClose}
+                >
+                  Cancel
+                </Button>
+              )}
+            </Box>
           </Box>
-        </Box>
+        )}
       </Box>
     </Modal>
   );

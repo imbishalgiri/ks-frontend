@@ -133,7 +133,32 @@ const UserProfile = () => {
                 !!!
               </div>
               <div className="right-body">
-                <div className="rbc">hi there</div>
+                <div
+                  className="rbc"
+                  style={{
+                    display: "flex",
+                    alignItems: "flex-start",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                  }}
+                >
+                  <div style={{ margin: "5px 100px" }}>
+                    <strong style={{ marginRight: "10px" }}> Email:</strong>{" "}
+                    {requestedUser?.user?.email}
+                  </div>
+                  <div style={{ margin: "5px 100px" }}>
+                    <strong style={{ marginRight: "10px" }}> Faculty:</strong>{" "}
+                    {requestedUser?.user?.faculty}
+                  </div>
+                  <div style={{ margin: "5px 100px" }}>
+                    <strong style={{ marginRight: "10px" }}> Semester:</strong>{" "}
+                    {requestedUser?.user?.semester}
+                  </div>
+                  <div style={{ margin: "5px 100px" }}>
+                    <strong style={{ marginRight: "10px" }}> Role:</strong>{" "}
+                    {requestedUser?.user?.role}
+                  </div>
+                </div>
               </div>
             </div>
           </>

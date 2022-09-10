@@ -12,7 +12,7 @@ const usestyles = makeStyles(() => ({
     p: "4",
   },
   modalHeader: {
-    background: "#2f71ab",
+    background: "#4250af",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
@@ -48,18 +48,20 @@ const usestyles = makeStyles(() => ({
     // fontFamily: "Euclid",
     ":&>*": {
       margin: "0 1rem",
-      background: "#2f71ab",
+      background: "#4250af",
     },
   },
   modalFooterCancel: {
     marginLeft: "10px",
-    background: "#2f71ab",
+    background: "#4250af",
+    color: "#fff",
     "&:hover": {
       background: "#ddd",
     },
   },
   modalFooterBtn: {
-    background: "#2f71ab",
+    background: "#4250af",
+    color: "#fff",
   },
   crossIcon: {
     "&>path": {

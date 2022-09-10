@@ -26,6 +26,7 @@ import { confirm } from "mui-confirm-modal";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import AddNotice from "./addNotice";
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -58,7 +59,10 @@ const AdminArea = () => {
   const [page, setPage] = useState(0);
   const [limit, setLimit] = useState(10);
   const [totalUsers, setTotalUsers] = useState(0);
+  const [addNoticeOpen, setAddNoticeOpen] = useState(false);
   const { user } = useSelector((state) => state.auth);
+  const [noticeSubmissionLoading, setNoticeSubmissionLoading] = useState(false);
+  const [noticeData, setNoticeData] = useState({});
   const navigate = useNavigate();
   const {
     register,
@@ -161,17 +165,27 @@ const AdminArea = () => {
     }
   };
 
-  function createData(name, calories, fat, carbs, protein) {
-    return { name, calories, fat, carbs, protein };
-  }
+  const noticeSubmit = (data) => {
+    setNoticeSubmissionLoading(true);
+    const formData = new FormData();
+    formData.append("image", noticeData?.image);
+    formData.append("description", noticeData?.description);
+    formData.append("audience", noticeData?.audience);
+    AxiosInstance.post("/notice", formData)
+      .then((res) => {
+        toast.success("successfully posted notice");
+        setNoticeSubmissionLoading(false);
+        handleClose();
+      })
+      .catch((err) => {
+        setNoticeSubmissionLoading(false);
+        toast.error("error adding notice");
+      });
+  };
 
-  const rows = [
-    createData("Frozen yoghurt", 159, 6.0, 24, 4.0),
-    createData("Ice cream sandwich", 237, 9.0, 37, 4.3),
-    createData("Eclair", 262, 16.0, 24, 6.0),
-    createData("Cupcake", 305, 3.7, 67, 4.3),
-    createData("Gingerbread", 356, 16.0, 49, 3.9),
-  ];
+  const handleNoticeOpen = () => {
+    setAddNoticeOpen(true);
+  };
 
   const useStyles = makeStyles({
     table: {
@@ -200,6 +214,15 @@ const AdminArea = () => {
             justifyContent: "flex-end",
           }}
         >
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<FaPlusCircle />}
+            style={{ textTransform: "none", marginRight: "20px" }}
+            onClick={handleNoticeOpen}
+          >
+            Add Notice
+          </Button>
           <Button
             variant="contained"
             color="primary"
@@ -361,6 +384,21 @@ const AdminArea = () => {
             inputRef={register}
           />
         </div>
+      </CustomModal>
+      <CustomModal
+        headerText={"Add notice from here."}
+        height={"70vh"}
+        open={addNoticeOpen}
+        handleClose={() => setAddNoticeOpen(false)}
+        onSave={noticeSubmit}
+        disabled={
+          !noticeData?.image ||
+          !noticeData?.description ||
+          !noticeData?.audience
+        }
+        isLoading={noticeSubmissionLoading}
+      >
+        <AddNotice parentSubmit={(e) => setNoticeData(e)} />
       </CustomModal>
     </>
   );

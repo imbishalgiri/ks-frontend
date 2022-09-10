@@ -18,7 +18,7 @@ const ProfilePanel = () => {
     []
   );
 
-  const { user } = useSelector((state) => state?.auth);
+  const { user, me } = useSelector((state) => state?.auth);
 
   return (
     <div style={{ top: "80px", position: "sticky" }}>
@@ -46,10 +46,30 @@ const ProfilePanel = () => {
               <span className="value">{post}</span>
             </div>
             <div className="separator" />
-            <div className="saved-items" onClick={() => openPage("feed/saved")}>
-              <SaveIcon />
-              <span>Pinned Posts</span>
+            <div className="saved-items">
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <SaveIcon />
+                <span style={{ marginLeft: "10px" }}>Pinned Posts</span>
+              </div>
             </div>
+            {me?.pinnedPosts?.map((el) => (
+              <div
+                style={{
+                  margin: "5px 12px",
+                  padding: "5px",
+                  backgroundColor: "#ddd",
+                  borderRadius: "5px",
+                  color: "blue",
+                }}
+              >
+                <small
+                  onClick={() => navigate("/dashboard/" + el._id)}
+                  style={{ cursor: "pointer" }}
+                >
+                  {el.title?.slice(0, 30) || "No title"}
+                </small>
+              </div>
+            ))}
           </div>
         </Container>
       </Panel>

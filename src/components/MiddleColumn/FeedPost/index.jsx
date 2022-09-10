@@ -42,6 +42,7 @@ import { SaveIcon } from "../../LeftColumn/ProfilePanel/styles";
 import useUser from "../../../hooks/checkUser";
 import { confirm } from "mui-confirm-modal";
 import { removePostStatic } from "../../../redux/postSlices";
+import { refreshMe } from "../../../redux/authSlices";
 
 const FeedPost = ({
   user,
@@ -191,6 +192,39 @@ const FeedPost = ({
     }
   };
 
+  const handlePin = async (postId) => {
+    let pinnedIds = auth.me?.pinnedPosts?.map((el) => el?._id) || [];
+    console.log("pinned ids -->", pinnedIds);
+    if (pinnedIds?.find((el) => el === postId)) {
+      pinnedIds = auth.me?.pinnedPosts?.filter((el) => el?._id !== postId);
+      postId = null;
+    }
+    const promise = new Promise((resolve, reject) =>
+      AxiosInstance.put("/users/update", {
+        _id: auth.user?._id,
+        pinnedPosts: [...pinnedIds, postId],
+      })
+        .then((res) => {
+          resolve("done");
+          dispatch(refreshMe());
+          handleClose();
+        })
+        .catch((err) => {
+          reject("error");
+        })
+    );
+    toast.promise(promise, {
+      pending: "please wait...",
+      success: "successfully accomplished",
+      error: "could not pin post",
+    });
+  };
+
+  const hasPost = () => {
+    if (auth?.me?.pinnedPosts?.find((el) => el?._id === post)) return true;
+    return false;
+  };
+
   return (
     <Panel>
       <Container>
@@ -230,13 +264,13 @@ const FeedPost = ({
               horizontal: "left",
             }}
           >
-            <MenuItem onClick={handleClose}>
-              {" "}
-              <SaveIcon style={{ marginRight: "10px" }} /> Pin
+            <MenuItem onClick={() => handlePin(post)}>
+              <SaveIcon style={{ marginRight: "10px" }} />{" "}
+              {hasPost() ? "unpin" : "pin"}
             </MenuItem>
             {isThisUser(userId) && (
               <MenuItem onClick={handleDelete}>
-                <FaTrash style={{ color: "#7c8a96", marginRight: "10px" }} />{" "}
+                <FaTrash style={{ color: "#7c8a96", marginRight: "10px" }} />
                 Delete
               </MenuItem>
             )}

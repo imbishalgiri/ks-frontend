@@ -46,12 +46,14 @@ import { SocketContext } from "../../context/socket";
 import { useContext } from "react";
 import Appbar from "../../components/appbar";
 import moment from "moment";
+import { getMe, getNotice } from "../../redux/authSlices";
 const SinglePost = () => {
   const { changeTheme, themeName } = useTheme();
   const dispatch = useDispatch();
   const { id: postId } = useParams();
   const boxRef = useRef();
   const { isCommenting, isCommented } = useSelector((state) => state.comment);
+  const { user, meRefresh } = useSelector((state) => state.auth);
   const socket = useContext(SocketContext);
   const {
     get: {
@@ -69,6 +71,14 @@ const SinglePost = () => {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  useEffect(() => {
+    user?._id && dispatch(getMe(user?._id));
+  }, [user?._id, meRefresh]);
+
+  useEffect(() => {
+    dispatch(getNotice());
+  }, []);
 
   // socket operations in here
   useEffect(() => {
@@ -173,7 +183,12 @@ const SinglePost = () => {
                 <br />
                 <br />
                 <Typography
-                  dangerouslySetInnerHTML={{ __html: data.post?.description }}
+                  style={{
+                    padding: "30px 30px",
+                    marginTop: "-12px",
+                    background: "#fff",
+                  }}
+                  dangerouslySetInnerHTML={{ __html: data?.description }}
                 ></Typography>
 
                 <br />

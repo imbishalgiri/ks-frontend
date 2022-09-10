@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { EditorState } from "draft-js";
-import { Editor } from "react-draft-wysiwyg";
+import { Editor as DraftEditor } from "react-draft-wysiwyg";
 import { convertToHTML } from "draft-convert";
 import DOMPurify from "dompurify";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
@@ -42,7 +42,7 @@ const TextEditor = ({ handleDescriptionChange = null, clear = false }) => {
   };
 
   return (
-    <Editor
+    <DraftEditor
       editorState={editorState}
       onEditorStateChange={handleEditorChange}
       wrapperClassName="wrapper-class"

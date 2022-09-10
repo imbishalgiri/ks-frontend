@@ -14,7 +14,7 @@ import {
   FaSignOutAlt,
   FaUser,
 } from "react-icons/fa";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { cleanAuth } from "../../redux/authSlices";
 
@@ -35,7 +35,7 @@ const Appbar = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const classes = useStyles();
-
+  const { user } = useSelector((state) => state.auth);
   const handleLogout = () => {
     localStorage.removeItem("ks-user-token");
     dispatch(cleanAuth());
@@ -63,13 +63,17 @@ const Appbar = () => {
           Knowledge Seekers
         </Typography>
 
-        <Button
-          onClick={() => navigate("/admin")}
-          style={{ marginRight: "50px", color: "#fff" }}
-          startIcon={<FaUser />}
-        >
-          Go to admin
-        </Button>
+        {user.role === "admin" ? (
+          <Button
+            onClick={() => navigate("/admin")}
+            style={{ marginRight: "50px", color: "#fff" }}
+            startIcon={<FaUser />}
+          >
+            Go to admin
+          </Button>
+        ) : (
+          ""
+        )}
 
         <Button
           style={{

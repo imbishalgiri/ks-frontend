@@ -7,13 +7,16 @@ import decode from "jwt-decode";
 const name = "auth";
 const initialState = {
   user: {},
-  isLoggingIn: false,
-  isLoggedIn: false,
+  me: {},
+  notice: [],
   requestedUser: {
     userfetching: false,
     userFetched: false,
     user: {},
   },
+  isLoggingIn: false,
+  isLoggedIn: false,
+  meRefresh: false,
 };
 
 // combination of normal actions and reducers
@@ -31,6 +34,11 @@ const reducers = {
     isLoggingIn: false,
     isLoggedIn: false,
   }),
+  // 3) refresh
+  refreshMe: (state) => ({
+    ...state,
+    meRefresh: !state?.meRefresh,
+  }),
 };
 
 // asynchronous actions right here
@@ -43,6 +51,14 @@ const extraActions = {
   getUser: createAsyncThunk(`${name}/getUser`, async (id) => {
     return await AxiosInstance.get(`/users/${id}`);
   }),
+  // 2) get single user
+  getMe: createAsyncThunk(`${name}/getMe`, async (id) => {
+    return await AxiosInstance.get(`/users/${id}`);
+  }),
+  // 3) get notice for me
+  getNotice: createAsyncThunk(`${name}/notice`, async () => {
+    return await AxiosInstance.get("/notice");
+  }),
 };
 
 // extracting states from actions
@@ -52,6 +68,17 @@ const {
   fulfilled: gotUser,
   rejected: failedUser,
 } = extraActions.getUser;
+const {
+  pending: gettingMe,
+  fulfilled: gotMe,
+  rejected: failedME,
+} = extraActions.getMe;
+
+const {
+  pending: noticePending,
+  fulfilled: noticeFulfilled,
+  rejected: noticeRejected,
+} = extraActions.getNotice;
 
 // hooking up extra reducers
 const extraReducers = {
@@ -86,7 +113,6 @@ const extraReducers = {
 
   // single user reducer here---------------------------------------
   [gotUser]: (state, action) => {
-    console.log("ap -->", action.payload?.data);
     return {
       ...state,
       requestedUser: {
@@ -109,6 +135,13 @@ const extraReducers = {
     };
   },
   // -----------------------------------------
+
+  [gotMe]: (state, action) => {
+    return { ...state, me: action.payload.data?.user };
+  },
+  [noticeFulfilled]: (state, action) => {
+    return { ...state, notice: action.payload.data?.notice };
+  },
 };
 
 export const postSlice = createSlice({
@@ -119,7 +152,15 @@ export const postSlice = createSlice({
 });
 
 // exporting actions for dispatch
-export const { login, addUser, cleanAuth, getUser } = {
+export const {
+  login,
+  addUser,
+  cleanAuth,
+  getUser,
+  getMe,
+  refreshMe,
+  getNotice,
+} = {
   ...postSlice.actions,
   ...extraActions,
 };
