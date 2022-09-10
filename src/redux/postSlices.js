@@ -55,7 +55,7 @@ const reducers = {
     state.get.allPosts.data = filteredPost;
   },
   addPostStatic: (state, action) => {
-    state.get.allPosts.data = [...action.payload, ...state.get.allPosts.data];
+    state.get.allPosts.data.push(...action.payload);
   },
 
   removeCommentStatic: (state, action) => {
