@@ -84,6 +84,7 @@ const SinglePost = () => {
   useEffect(() => {
     socket.on("receiveComment", (comment) => {
       dispatch(addCommentStatic(comment));
+      toast.info("someone just commented on this post");
     });
 
     socket.on("receiveReply", (reply) => {

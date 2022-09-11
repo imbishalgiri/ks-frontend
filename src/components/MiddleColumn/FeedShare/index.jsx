@@ -93,7 +93,7 @@ const FeedShare = () => {
     tags.forEach((singleTag) => {
       formData.append("tags[]", singleTag.value);
     });
-    formData.append("category", category.value);
+    formData.append("category", category);
     formData.append("user", "62a5c151f5d5cab29da71368");
     dispatch(addPost(formData, handleClose));
   };
