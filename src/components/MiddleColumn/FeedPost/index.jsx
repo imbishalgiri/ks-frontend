@@ -59,6 +59,7 @@ const FeedPost = ({
   single = false,
   userId = "",
   postTitle,
+  faculty = "Software Engineering",
 }) => {
   const classes = useStyles();
   const [isDisliked, setIsDisliked] = useState(false);
@@ -236,7 +237,7 @@ const FeedPost = ({
           />
           <Column>
             <h3>{user}</h3>
-            <h4>{"Software Engineering student at ncit"}</h4>
+            <h4>{faculty + " student at ncit"}</h4>
             <Tooltip
               title={`${user} posted ${time}`}
               placement="bottom"

@@ -3,7 +3,7 @@ import moment from "moment";
 import { useEffect, useRef, useState } from "react";
 import { FaFile, FaUpload } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import AxiosInstance from "../../apis/axios";
 import Appbar from "../../components/appbar";
@@ -13,16 +13,28 @@ import "./styles.css";
 const UserProfile = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { requestedUser, user } = useSelector((state) => state?.auth);
 
   const hiddenFileInput = useRef();
   const [image, setImage] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isUploaded, setIsUploased] = useState(false);
+  const [currentUserPosts, setCurrentUserPosts] = useState([]);
 
   // fetching user here
   useEffect(() => {
     id && dispatch(getUser(id));
+  }, [id]);
+
+  useEffect(() => {
+    if (id) {
+      AxiosInstance.get("/posts/my/" + id)
+        .then((res) => {
+          setCurrentUserPosts(res.data?.posts);
+        })
+        .catch((err) => toast.error("user post get failed"));
+    }
   }, [id]);
 
   const handlePicClick = (event) => {
@@ -138,25 +150,74 @@ const UserProfile = () => {
                   style={{
                     display: "flex",
                     alignItems: "flex-start",
-                    flexDirection: "column",
-                    justifyContent: "center",
                   }}
                 >
-                  <div style={{ margin: "5px 100px" }}>
-                    <strong style={{ marginRight: "10px" }}> Email:</strong>{" "}
-                    {requestedUser?.user?.email}
+                  <div>
+                    <div
+                      style={{
+                        backgroundColor: "#979fd6",
+                        width: "100%",
+                        padding: "5px",
+                        marginBottom: "5px",
+                      }}
+                    >
+                      Some posts of this user.
+                    </div>
+                    <div style={{ display: "flex", flexDirection: "column" }}>
+                      <ul>
+                        {currentUserPosts?.map((el) => (
+                          <li
+                            onClick={() => navigate("/dashboard/" + el?._id)}
+                            style={{
+                              margin: "10px 20px",
+                              color: "blue",
+                              cursor: "pointer",
+                            }}
+                          >
+                            {el?.title}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   </div>
-                  <div style={{ margin: "5px 100px" }}>
-                    <strong style={{ marginRight: "10px" }}> Faculty:</strong>{" "}
-                    {requestedUser?.user?.faculty}
-                  </div>
-                  <div style={{ margin: "5px 100px" }}>
-                    <strong style={{ marginRight: "10px" }}> Semester:</strong>{" "}
-                    {requestedUser?.user?.semester}
-                  </div>
-                  <div style={{ margin: "5px 100px" }}>
-                    <strong style={{ marginRight: "10px" }}> Role:</strong>{" "}
-                    {requestedUser?.user?.role}
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "flex-start",
+                      flexDirection: "column",
+                      marginLeft: "50px",
+                    }}
+                  >
+                    <div
+                      style={{
+                        backgroundColor: "#979fd6",
+                        width: "100%",
+                        padding: "5px",
+                        marginBottom: "5px",
+                      }}
+                    >
+                      More Info
+                    </div>
+
+                    <div style={{ margin: "5px " }}>
+                      <strong style={{ marginRight: "10px" }}> Email:</strong>{" "}
+                      {requestedUser?.user?.email}
+                    </div>
+                    <div style={{ margin: "5px" }}>
+                      <strong style={{ marginRight: "10px" }}> Faculty:</strong>{" "}
+                      {requestedUser?.user?.faculty}
+                    </div>
+                    <div style={{ margin: "5px" }}>
+                      <strong style={{ marginRight: "10px" }}>
+                        {" "}
+                        Semester:
+                      </strong>{" "}
+                      {requestedUser?.user?.semester}
+                    </div>
+                    <div style={{ margin: "5px" }}>
+                      <strong style={{ marginRight: "10px" }}> Role:</strong>{" "}
+                      {requestedUser?.user?.role}
+                    </div>
                   </div>
                 </div>
               </div>

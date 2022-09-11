@@ -62,6 +62,7 @@ const MiddleColumn = forwardRef(
                       time={moment(data?.createdAt)?.fromNow()}
                       userId={data?.user?._id}
                       postTitle={data?.title}
+                      faculty={data.user?.faculty}
                     />
                   );
                 })}

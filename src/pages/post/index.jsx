@@ -173,6 +173,7 @@ const SinglePost = () => {
                   single={true}
                   allLikes={data?.likes}
                   allComments={data?.comments}
+                  faculty={data.user?.faculty}
                   key={data?._id}
                   post={data?._id}
                   userId={data?.user?._id}
