@@ -7,9 +7,15 @@ export const isLoggedIn = () => {
 
 const Protected = ({ children }) => {
   const { user } = useSelector((state) => state.auth);
-  if (isLoggedIn() && !user?.isBrandNew) {
+
+  if (isLoggedIn() && !user?.isBrandNew && user.role?.trim() !== "nsu") {
     return children;
   }
+
+  if (isLoggedIn() && user.role?.trim() === "nsu") {
+    return <Navigate to="/message-area" replace />;
+  }
+
   if (isLoggedIn()) {
     return <Navigate to="/initial" replace />;
   }

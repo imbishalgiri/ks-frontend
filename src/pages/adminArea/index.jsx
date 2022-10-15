@@ -252,7 +252,9 @@ const AdminArea = () => {
                 <TableBody>
                   {allUsers?.map((row, idx) => (
                     <StyledTableRow key={row.name}>
-                      <StyledTableCell>{idx + 1}</StyledTableCell>
+                      <StyledTableCell>
+                        {page * limit + 1 + idx}
+                      </StyledTableCell>
                       <StyledTableCell>{row.email}</StyledTableCell>
                       <StyledTableCell component="th" scope="row">
                         {row.firstName}

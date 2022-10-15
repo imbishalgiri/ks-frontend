@@ -24,6 +24,7 @@ import Protected from "./components/protected";
 import UserProfile from "./pages/userProfile";
 import AdminArea from "./pages/adminArea";
 import Initial from "./pages/initial";
+import MessageArea from "./pages/messageArea";
 
 const App = () => {
   const { themeName } = useTheme();
@@ -97,6 +98,8 @@ const App = () => {
               </Protected>
             }
           />
+          {/* --------------------- */}
+          <Route path="/message-area" element={<MessageArea />} />
           {/* --------------------- */}
           <Route path="/initial" element={<Initial />} />
           {/* --------------------- */}
