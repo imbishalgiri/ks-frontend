@@ -1,7 +1,11 @@
 import {
   Button,
   CircularProgress,
+  FormControl,
   IconButton,
+  InputLabel,
+  MenuItem,
+  Select,
   TableFooter,
   TablePagination,
   TextField,
@@ -55,11 +59,11 @@ const MessageArea = () => {
   const [userLoading, setUserLoading] = useState(false);
   const [allUsers, setAllUsers] = useState([]);
   const [refresh, setRefresh] = useState(false);
-  const [editOpen, setEditOpen] = useState(false);
 
   const [page, setPage] = useState(0);
   const [limit, setLimit] = useState(10);
   const [totalUsers, setTotalUsers] = useState(0);
+  const [type, setType] = useState("");
 
   const { user } = useSelector((state) => state.auth);
 
@@ -77,7 +81,7 @@ const MessageArea = () => {
 
   useEffect(() => {
     setUserLoading(true);
-    AxiosInstance.get(`/user-message?page=${page}&limit=${limit}`)
+    AxiosInstance.get(`/user-message?page=${page}&limit=${limit}&type=${type}`)
       .then((res) => {
         setAllUsers(res?.data?.data);
         setTotalUsers(res?.data?.totalMessages);
@@ -87,7 +91,7 @@ const MessageArea = () => {
         setUserLoading(false);
         toast.error("error getting user");
       });
-  }, [refresh, page, limit]);
+  }, [refresh, page, limit, type]);
 
   const handleDeleteUser = async (userId) => {
     if (
@@ -136,11 +140,37 @@ const MessageArea = () => {
         }}
       >
         <div style={{ width: "90vw", marginTop: "100px" }} className="table">
+          <FormControl
+            style={{ width: "200px", margin: "0 0 20px 0" }}
+            variant="filled"
+          >
+            <InputLabel id="demo-simple-select-outlined-label">
+              filter
+            </InputLabel>
+            <Select
+              labelId="demo-simple-select-outlined-label"
+              id="demo-simple-select-outlined"
+              value={type}
+              onChange={(e) => setType(e.target.value)}
+              label="Age"
+            >
+              <MenuItem value="">
+                <em>All</em>
+              </MenuItem>
+              <MenuItem value={"startup"}>startup</MenuItem>
+              <MenuItem value={"exhibition"}>exhibition</MenuItem>
+              <MenuItem value={"robowars"}>robo wars</MenuItem>
+              <MenuItem value={"hackathon"}>hackathon</MenuItem>
+              <MenuItem value={"contact"}>contact us</MenuItem>
+            </Select>
+          </FormControl>
+
           <TableContainer component={Paper}>
             <Table className={classes.table} aria-label="customized table">
               <TableHead>
                 <TableRow>
                   <StyledTableCell>SN.</StyledTableCell>
+                  <StyledTableCell>Received At</StyledTableCell>
                   <StyledTableCell>Email</StyledTableCell>
                   <StyledTableCell>Name</StyledTableCell>
                   <StyledTableCell>Phone Number</StyledTableCell>
@@ -157,6 +187,7 @@ const MessageArea = () => {
                       <StyledTableCell>
                         {page * limit + 1 + idx}
                       </StyledTableCell>
+                      <StyledTableCell>{row.type}</StyledTableCell>
                       <StyledTableCell>{row.email}</StyledTableCell>
                       <StyledTableCell>{row.name}</StyledTableCell>
                       <StyledTableCell component="th" scope="row">
