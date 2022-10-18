@@ -161,7 +161,7 @@ const MessageArea = () => {
               <MenuItem value={"exhibition"}>exhibition</MenuItem>
               <MenuItem value={"robowars"}>robo wars</MenuItem>
               <MenuItem value={"hackathon"}>hackathon</MenuItem>
-              <MenuItem value={"contact"}>contact us</MenuItem>
+              <MenuItem value={"contact-page"}>contact us</MenuItem>
             </Select>
           </FormControl>
 
@@ -170,7 +170,9 @@ const MessageArea = () => {
               <TableHead>
                 <TableRow>
                   <StyledTableCell>SN.</StyledTableCell>
-                  <StyledTableCell>Received At</StyledTableCell>
+                  <StyledTableCell style={{ width: "300px" }}>
+                    Received from
+                  </StyledTableCell>
                   <StyledTableCell>Email</StyledTableCell>
                   <StyledTableCell>Name</StyledTableCell>
                   <StyledTableCell>Phone Number</StyledTableCell>
